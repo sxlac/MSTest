@@ -1,0 +1,91 @@
+parameters:
+  - name: variableGroup
+    type: string 
+    default: ancillary-qe-pipeline-prod 
+  - name: dco_environment_variables
+    type: string
+    default: "-e OKTA_USERNAME=$(OKTA_USERNAME) 
+    -e OKTA_PASSWORD=$(OKTA_PASSWORD)
+    -e CKD_DB_USERNAME=$(CKD_DB_USERNAME)
+    -e CKD_DB_PASSWORD=$(CKD_DB_PASSWORD)
+    -e CKD_DB_URL=$(CKD_DB_URL)
+    -e OKTA_CLIENT_ID=$(OKTA_CLIENT_ID) 
+    -e ZEPHYR_API_TOKEN=$(ZEPHYR_API_TOKEN)
+    -e ZEPHYR_API_URL=$(ZEPHYR_API_URL)
+    -e CREATE_TEST_CYCLE=$(CREATE_TEST_CYCLE)
+    -e ZEPHYR_DESCRIPTION='$(Build.SourceVersionMessage)'
+    -e COMMIT_ID=$(Build.SourceVersion)
+    -e ANCILLARY_SERVICE='CKD'"
+  - name: dco_file_location
+    type: string
+    default: "tests/ancillary-services-karate-tests"
+  - name: karate_env
+    type: string
+    default: prod
+
+jobs:
+- job: CKD_Tests
+  displayName: ancillary.ckd.service.tests
+  pool:
+    name: uat-linux-test
+  steps:
+  - checkout: self
+    clean: true
+
+  - task: Docker@2
+    displayName: Docker Login
+    inputs:
+      containerRegistry: signifyhealthdev
+      command: login
+
+  - task: Bash@3
+    displayName: Generate unique container name
+    inputs:
+      targetType: inline
+      script: |
+        containerName=$(git rev-parse --short=7 HEAD)-ckd
+        echo "##vso[task.setvariable variable=container_name]$containerName"
+
+  - task: Bash@3
+    displayName: Spin up Docker and run Karate tests
+    inputs:
+      targetType: inline
+      script: |
+        docker compose run ${{ parameters.dco_environment_variables }} \
+          --build \
+          --name $(container_name) \
+          ancillary-karate-tests \
+          mvn test -Dkarate.env="${{ parameters.karate_env }}" "-Dkarate.options=--tags @smoke-ckd"
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/karate-reports/**.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: $(Build.DefinitionName) Results
+
+  - task: CopyFiles@2
+    displayName: Copy JUnit XML Files to Artifact Staging
+    condition: succeededOrFailed()
+    inputs:
+      SourceFolder: $(System.DefaultWorkingDirectory)
+      Contents: '**/karate-reports/**.xml'
+      TargetFolder: $(build.artifactstagingdirectory)
+      preserveTimestamp: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Test Results Artifact
+    condition: succeededOrFailed()
+    inputs:
+      ArtifactName: $(Build.DefinitionName)-junit-reports
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Karate Test Html Reports
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/target/karate-reports
+      artifact: KarateHTMLReport_$(System.JobId)
+      publishLocation: 'pipeline'

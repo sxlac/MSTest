@@ -1,0 +1,3 @@
+site_name: "PAD Process Manager"
+plugins:
+  - techdocs-core

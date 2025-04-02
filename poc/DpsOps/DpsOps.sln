@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DpsOps.ConsoleApplication", "DpsOps.ConsoleApplication\DpsOps.ConsoleApplication.csproj", "{71D63316-8627-4AE1-A7A3-5213CE745AF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DpsOps.Core", "DpsOps.Core\DpsOps.Core.csproj", "{927AB4B3-77C3-4710-AE2B-A92703265547}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71D63316-8627-4AE1-A7A3-5213CE745AF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D63316-8627-4AE1-A7A3-5213CE745AF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D63316-8627-4AE1-A7A3-5213CE745AF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D63316-8627-4AE1-A7A3-5213CE745AF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{927AB4B3-77C3-4710-AE2B-A92703265547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{927AB4B3-77C3-4710-AE2B-A92703265547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{927AB4B3-77C3-4710-AE2B-A92703265547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{927AB4B3-77C3-4710-AE2B-A92703265547}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

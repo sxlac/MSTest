@@ -1,0 +1,187 @@
+---
+# NOTE: PDBs are immutable prior to v1.15. Starting with a maxUnavailable of 1 is good practice, so a deployment with 3 replicas will always have at least 2 running.
+# Additional configuration can be found at https://kubernetes.io/docs/tasks/run-application/configure-pdb/#think-about-how-your-application-reacts-to-disruptions
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  maxUnavailable: #{PDB:MaxUnavailable}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}-config
+type: Opaque
+stringData:
+  db-connstr: #{DBConnectionString}
+  asb-connstr: #{AzureServiceBusConnectionString}
+  akka-connstr: #{AkkaPersistenceConnectionString}
+  okta-token: "#{OktaClientSecret}"
+  oauth-client-password: "#{OAuthClientPassword}"
+  kafka-password: "#{ConfluentCloudPassword}"
+  ld-project-key: "#{LaunchDarkly:ProjectLicenseKey}"
+  ld-shared-key: "#{LaunchDarkly:SharedLicenseKey}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+  labels:
+    app: #{DockerName}
+spec:
+  clusterIP: None
+  selector:
+    app: #{DockerName}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  replicas: #{Replicas} # Typically set to 1 for all environments
+  revisionHistoryLimit: 2
+  serviceName: #{DockerName}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+  template:
+    metadata:
+      labels:
+        app: #{DockerName}
+        version: #{VersionWithSha}
+    spec:
+      containers:
+        - image: "signifyhealth.azurecr.io/#{ImageName}"
+          imagePullPolicy: Always
+          name: #{DockerName}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LivenessProbe__Uri
+              value: "http://*:5051/health/live/" # Note these paths must end in a '/'
+            - name: DOTNET_ENVIRONMENT
+              value: #{EnvironmentName}
+            - name: NEW_RELIC_APP_NAME
+              value: Signify.Spirometry.Svc-#{EnvironmentName}
+            - name: NEW_RELIC_LICENSE_KEY
+              value: #{NewRelicLicenseKey}
+            - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+              value: "true"
+            - name: Serilog__MinimumLevel__Default
+              value: #{SerilogMinimumLevel}
+            - name: Serilog__Properties__Environment
+              value: #{EnvironmentName}
+            - name: Serilog__Properties__Version
+              value: #{VersionWithSha}
+            - name: KafkaConsumer__Brokers
+              value: #{KafkaBrokers}
+            - name: KafkaConsumer__SecurityProtocol
+              value: sasl_ssl
+            - name: KafkaConsumer__Username
+              value: #{ConfluentCloudUsername}
+            - name: KafkaConsumer__Password
+              valueFrom:
+                secretKeyRef:
+                  key: kafka-password
+                  name: #{DockerName}-config
+            - name: KafkaProducer__Brokers
+              value: #{KafkaBrokers}
+            - name: KafkaProducer__SecurityProtocol
+              value: sasl_ssl
+            - name: KafkaProducer__Username
+              value: #{ConfluentCloudUsername}
+            - name: KafkaProducer__Password
+              valueFrom:
+                secretKeyRef:
+                  key: kafka-password
+                  name: #{DockerName}-config
+            - name: KafkaProducer__PersistenceConnection
+              valueFrom:
+                secretKeyRef:
+                  key: akka-connstr
+                  name: #{DockerName}-config
+            - name: ConnectionStrings__DB
+              valueFrom:
+                secretKeyRef:
+                  key: db-connstr
+                  name: #{DockerName}-config
+            - name: ConnectionStrings__AzureServiceBus
+              valueFrom:
+                secretKeyRef:
+                  key: asb-connstr
+                  name: #{DockerName}-config
+            - name: Okta__Domain
+              value: "#{OktaApiUrl}"
+            - name: Okta__ClientId
+              value: "#{OktaClientId}"
+            - name: Okta__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  key: okta-token
+                  name: #{DockerName}-config
+            - name: OAuth__ServiceUrl
+              value: "#{OAuthServiceUrl}"
+            - name: OAuth__ClientPassword
+              valueFrom:
+                secretKeyRef:
+                  key: oauth-client-password
+                  name: #{DockerName}-config
+            - name: ApiUrls__CdiFlagsApiUrl
+              value: "#{CdiFlagsApiUrl}"
+            - name: ApiUrls__CdiHoldsApiUrl
+              value: "#{CdiHoldsApiUrl}"
+            - name: ApiUrls__RcmApiUrl
+              value: "#{RcmApiUrl}"
+            - name: ApiUrls__ProviderPayApiUrl
+              value: "#{ProviderPayApiUrl}"
+            - name: LaunchDarkly__SharedLicenseKey
+              valueFrom:
+                secretKeyRef:
+                  key: ld-shared-key
+                  name: #{DockerName}-config
+            - name: LaunchDarkly__ProjectLicenseKey
+              valueFrom:
+                secretKeyRef:
+                  key: ld-project-key
+                  name: #{DockerName}-config
+          livenessProbe: # alternately startupProbe or readinessProbe
+            httpGet:
+              path: "/health/live/"
+              port: 5051
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 6
+          resources:
+            requests:
+              cpu: #{ResourceRequest:Cpu} # Set to 100m
+              memory: #{ResourceRequest:Memory} # Set to 250M
+            limits:
+              cpu: #{ResourceLimit:Cpu} # Set to 500m
+              memory: #{ResourceLimit:Memory} # Set to 500M
+          volumeMounts:
+            - name: particular
+              mountPath: /usr/share/ParticularSoftware
+              readOnly: true
+            - name: ca-pemstore
+              mountPath: /etc/ssl/certs/censeoca01-root.pem
+              subPath: censeoca01-root.pem
+              readOnly: true
+      volumes:
+        - name: particular
+          secret:
+            secretName: particular
+        - name: ca-pemstore
+          secret:
+            secretName: ca-pemstore

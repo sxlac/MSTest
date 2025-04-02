@@ -1,0 +1,23 @@
+@startuml ContextDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title PAD Context Diagram
+
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Provider that performs HRE assessment")
+System_Ext(evaluation, "Evaluations", "System that stores evaluation data")
+System_Ext(billingsystem, "Billing System", "System that handles RCM Billing")
+System_Ext(providerpay, "Provider Pay System", "System that handles payments to providers")
+System(padprocessmanager, "PAD Process Manager", "Processes events corresponding to the Pulmonary Arterial Disease test")
+
+Rel_R(provider, evaluation, "Sends completed evaluation data")
+Rel_D(evaluation, padprocessmanager, "Notifies evaluation is finalized")
+Rel_U(padprocessmanager, evaluation, "Retrieves data from evaluation")
+Rel_D(padprocessmanager, billingsystem, "Sends billing request")
+Rel_D(padprocessmanager, providerpay, "Sends provider payment requests")
+
+@enduml

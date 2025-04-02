@@ -1,0 +1,4 @@
+site_name: "CKD Process Manager"
+site_description: "Application to handle CKD Diagnostic and Preventative Screening tests"
+plugins:
+  - techdocs-core

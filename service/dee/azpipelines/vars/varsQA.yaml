@@ -1,0 +1,5 @@
+variables:
+  EnvironmentName: QA
+  ImagePullPolicy: Always
+  vssPath: global/serviceaccounts/kafka/kafka-global-sa-qa
+  vssMount: qa-usc-shared-aks

@@ -1,0 +1,1 @@
+ALTER TABLE public."CdiEventForPayment" DROP COLUMN "Username";

@@ -1,0 +1,1 @@
+Most documentation for the Spirometry process manager is located in Confluence under the [Ancillary Services](https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51218696/Spirometry+Process+Manager) space.

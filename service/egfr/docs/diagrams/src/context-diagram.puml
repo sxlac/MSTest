@@ -1,0 +1,58 @@
+@startuml egfr-context-diagram
+
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title eGFR Context Diagram
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+
+Person(provider, "Provider", "Performs Health Risk Assessment")
+Person(member, "Member")
+
+System_Ext(lgc, "Let's Get Checked", "3rd party lab vendor that analyzes KED (eGFR and uACR) samples", $tags="3rdParty")
+
+Enterprise_Boundary(sh, "Signify") {
+    System_Ext(cc, "Care Consult\n(iPad/Mobile)")
+    System_Ext(evaluation, "Evaluation System")
+    System_Ext(appointment, "Appointment System")
+    System_Ext(member_sys, "Member System")  
+    System_Ext(provider_sys, "Provider System")
+    System_Ext(cdi, "CDI System")
+    System_Ext(pp, "Provider Pay System")
+    System_Ext(pdf, "PDF Delivery System")
+    System_Ext(rcm, "RCM System")
+
+    System_Ext(ha, "HomeAccess Service")
+
+    System_Ext(oms, "Order Management System")
+
+    System(pm, "eGFR System")
+}
+
+Rel(provider, member, "Collects blood sample")
+
+Rel(provider, cc, "Performs evaluation")
+Rel(cc, evaluation, "Sends evaluation answers to", "HTTPS")
+
+Rel(provider, lgc, "Sends blood sample to", "mail")
+Rel(pm, oms, "Sends order requests to", "TCP")
+Rel(oms, lgc, "Sends order requests to", "SFTP")
+Rel(lgc, ha, "Sends eGFR lab results to", "SFTP")
+Rel(ha, pm, "Lab result events sent to", "TCP")
+
+Rel(evaluation, pm, "Evaluation events sent to", "TCP")
+Rel_Up(pm, evaluation, "Queries evaluation data from", "HTTPS")
+
+Rel(pm, appointment, "Queries appointment data from", "HTTPS")
+Rel(pm, member_sys, "Queries member data from", "HTTPS")
+Rel(pm, provider_sys, "Queries provider data from", "HTTPS")
+
+Rel(cdi, pm, "CDI events sent to", "TCP")
+Rel_Down(pm, pp, "Sends provider pay requests to", "HTTPS")
+
+Rel(pdf, pm, "pdf delivery events sent to", "TCP")
+Rel_Down(pm, rcm, "Sends billing requests to", "HTTPS")
+
+SHOW_LEGEND()
+
+@enduml

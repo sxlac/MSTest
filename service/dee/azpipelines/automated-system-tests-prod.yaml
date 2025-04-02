@@ -1,0 +1,75 @@
+parameters:
+  - name: envVariables
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: OKTA_CLIENT_ID
+        value: $(OKTA_CLIENT_ID)
+      - name: DEE_DB_USERNAME
+        value: $(DEE_DB_USERNAME)
+      - name: DEE_DB_PASSWORD
+        value: $(DEE_DB_PASSWORD)
+      - name: DEE_DB_HOST
+        value: $(DEE_DB_HOST)
+      - name: LD_SDK_KEY
+        value: $(LD_SDK_KEY)
+      - name: LD_USER_KEY
+        value: $(LD_USER_KEY)
+      - name: LD_USERNAME
+        value: $(LD_USERNAME)
+      - name: SERVICE
+        value: 'dee'
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/dee/src/Signify.DEE.Svc.System.Tests/RunSettings/prod.runsettings
+  - name: testCycleName
+    type: string
+    default: 'Test Automation Run for Commit : $(Build.SourceVersion) (DEE)-PROD'
+  - name: dotnetVersion
+    type: string
+    default: '8.0.x'
+  - name: flyway
+    type: boolean
+    default: false
+
+jobs:
+  - job: Dotnet_System_Tests
+    displayName: Dotnet.System.Tests
+    pool: k8s-agents
+    variables:
+      - group: qe-common-zephyr
+      - name: testFilter
+        ${{ if eq(parameters.flyway, true) }}:
+          value: '"TestCategory=prod_smoke|TestCategory=database"'
+        ${{else}}:
+          value: '"TestCategory=prod_smoke"'
+    steps:
+      - checkout: self
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '${{ parameters.dotnetVersion }}'
+      - task: DotNetCoreCLI@2
+        displayName: dotnet test
+        inputs:
+          command: test
+          projects: $(Build.SourcesDirectory)/$(Build.Repository.Name)/service/dee/src/Signify.DEE.Svc.System.Tests/Signify.DEE.Svc.System.Tests.csproj
+          arguments: '--configuration Test -s ${{parameters.runSettingsFilePath}} --logger:"console;verbosity=detailed" --filter ${{variables.testFilter}}'
+          publishTestResults: true
+          nobuild: false
+        env:
+          ${{ each envVariable in parameters.envVariables }}:
+            ${{ envVariable.name }}: ${{ envVariable.value }}
+      - template: steptemplates/zephyr-create-test-cycle.yaml@templates
+        parameters:
+          zephyrApiUrl: '$(ZEPHYR_API_URL)ANC'
+          zephyrApiToken: $(ZEPHYR_API_TOKEN)
+          testResultsFilePath: '$(Agent.TempDirectory)/*.trx'
+          jiraProjectKey: 'ANC'
+          testCycleName: ${{ parameters.testCycleName }}
+...

@@ -1,0 +1,588 @@
+asyncapi: '2.6.0'
+info:
+  title: Spirometry API
+  version: '1.0.0'
+
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  spirometry_status/Performed:
+    description: An event that signals spirometry test was performed
+    subscribe:
+      summary: An event that signals spirometry test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  spirometry_status/NotPerformed:
+    description: An event that signals spirometry test was not performed
+    subscribe:
+      summary: An event that signals spirometry test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  spirometry_status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  spirometry_status/BillRequestNotSent:
+    description: An event that signals bill request not sent
+    subscribe:
+      summary: An event that signals bill request not sent
+      message:
+        $ref: '#/components/messages/BillRequestNotSent'
+  spirometry_status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  spirometry_status/ProviderNonPayableEventReceived:
+    description: An event that signals non payable test
+    subscribe:
+      summary: An event that signals non payable test
+      message:
+        $ref: '#/components/messages/ProviderNonPayableEventReceived'
+  spirometry_status/ProviderPayableEventReceived:
+    description: An event that signals payable test
+    subscribe:
+      summary: An event that signals payable test
+      message:
+        $ref: '#/components/messages/ProviderPayableEventReceived'
+  spirometry_results/ResultsReceived:
+    description: An event that signals lab results have been received
+    subscribe:
+      summary: An event that signals lab results have been received
+      message:
+        $ref: '#/components/messages/ResultsReceived'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: Spirometry test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: Spirometry test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    BillRequestNotSent:
+      name: BillRequestNotSent
+      title: BillRequestNotSent
+      summary: Bill request has not been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestNotSent"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    ProviderNonPayableEventReceived:
+      name: ProviderNonPayableEventReceived
+      title: ProviderNonPayableEventReceived
+      summary: Non payable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderNonPayableEventReceived"
+    ProviderPayableEventReceived:
+      name: ProviderPayableEventReceived
+      title: ProviderPayableEventReceived
+      summary: Payable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayableEventReceived"
+    ResultsReceived:
+      name: ResultsReceived
+      title: ResultsReceived
+      summary: Lab results received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ResultsReceived"
+  schemas:
+    Performed:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        Barcode:
+          type: string
+          format: string
+          description: Barcode for this test
+          example: 293842
+    NotPerformed:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Member apprehension
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Normality is Undetermined
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+    BillRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: SPIROMETRY
+        PdfDeliveryDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773+00:00
+    BillRequestNotSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: SPIROMETRY
+        PdfDeliveryDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderPayRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        ParentEventDateTime:
+          type: string
+          format: DateTimeOffset
+          description: Date and time contained within the parent kafka event that triggered this status change
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderNonPayableEventReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderPay
+          example: CDIPassedEvent
+        Reason:
+          type: string
+          format: string
+          description: Reason for non payable
+          example: Normality is Undetermined
+    ProviderPayableEventReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderPay
+          example: CDIPassedEvent
+    ResultsReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: SPIROMETRY
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date results received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: ["A","N","U"]
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Result:
+          type: object
+          format: Group
+          properties:
+            SessionGrade: 
+              type: string
+              format: string
+              description: Spirometry Result
+              example: "E"
+            Fvc:
+              type: integer
+              format: short
+              description: Spirometry Result
+              example: 100
+            FvcNormality: 
+               type: string
+               format: string
+               description: Normality for the FVC result
+               example: "N"
+            Fev1:
+              type: integer
+              format: short
+              description: Although FVC is volumetric (measured as Liters), this value is actually a <i>percentage of predicted volume according to the member's demographics (age, weight, height, etc).
+              example: 30
+            Fev1Normality:
+              type: string
+              format: string
+              description: Normality for the FEV-1 result
+              example: "A"
+            Fev1OverFvc:
+              type: integer
+              format: decimal
+              description: FEV-1/FVC point-of-care result
+              example: 0.50
+            HasSmokedTobacco:
+              type: boolean
+              format: bool
+              description: Whether or not the member has smoked tobacco
+              example: true
+            TotalYearsSmoking:
+              type: integer
+              format: int
+              description: Total number of years the member has smoked
+              example: 4
+            ProducesSputumWithCough:
+              type: boolean
+              format: bool
+              description: Whether or not the member produces sputum when coughing
+              example: false
+            CoughMucusOccurrenceFrequency:
+              type: integer
+              format: short
+              description: Whether the member has had wheezing in the past 12 months. 1 - Never, 2 - Rarely, 3 - Sometimes, 4 - Often, 5 - VeryOften
+              example: 4
+            HadWheezingPast12mo:
+              type: integer
+              format: short
+              description: Whether or not the member produces sputum when coughing. 1 - Unknown, 2 - Yes , 3 - No
+              example: 1
+            GetsShortnessOfBreathAtRest:
+              type: integer
+              format: short
+              description: whether the member gets short of breath at rest. 1 - Unknown, 2 - Yes , 3 - No
+              example: 1
+            GetsShortnessOfBreathWithMildExertion:
+              type: integer
+              format: short
+              description: whether the member gets short of breath mild exertion. 1 - Unknown, 2 - Yes , 3 - No
+              example: 1
+            NoisyChestOccurrenceFrequency:
+              type: integer
+              format: short
+              description: For how often the member's chest sounds noisy (wheezy, whistling, rattling) when they breathe. 1 - Never, 2 - Rarely, 3 - Sometimes, 4 - Often, 5 - VeryOften
+              example: 4
+            ShortnessOfBreathPhysicalActivityOccurrenceFrequency:
+              type: integer
+              format: short
+              description: for how often the member experiences shortness of breath during physical activity (walking up a flight of stairs or walking up an incline without stopping to rest). 1 - Never, 2 - Rarely, 3 - Sometimes, 4 - Often, 5 - VeryOften
+              example: 4
+            LungFunctionScore:
+              type: integer
+              format: int
+              description: Lung Function Questionnaire Score; a calculation of COPD risk, which is calculated based on symptom support questions, along with the member's age and number of years the member smoked, when applicable A score of 18 or less (29 is the current maximum) indicates a member is at risk for COPD. Prior history of COPD, the Lung Function Questionnaire Score, along with the Spirometry test are utilized in the diagnosis of COPD
+              example: 17
+            Copd:
+              type: boolean
+              format: bool
+              description: COPD Diagnosis
+              example: false
+            EligibleForOverread:
+              type: boolean
+              format: bool
+              description: Whether this spirometry exam is eligible to receive an overread from the vendor. Note not all exams eligible for overread will result in a system flag being created for a clarification to the provider, nor will all exams eligible for overread be held in CDI.
+              example: false
+            WasHeldForOverread:
+              type: boolean
+              format: bool
+              description: Whether this evaluation's Hold in CDI was kept in effect until expiration or receipt of an overread from the vendor
+              example: false
+            Result:
+              type: string
+              format: string
+              description: Spirometry Result
+            AbnormalIndicator:
+              type: string
+              format: string
+              description: Identifier of the Member Normality in Code based on SpirometryResult i.e. N/A/U
+          description: Identifier of lab result and normality indicator
+          example:  "SessionGrade: \"E\", Fvc: 100, FvcNormality: \"N\", Fev1: 30, Fev1Normality: \"A\",Fev1OverFvc: 0.50, HasSmokedTobacco: null, TotalYearsSmoking: null, ProducesSputumWithCough: null, CoughMucusOccurrenceFrequency: null, HadWheezingPast12mo: null, GetsShortnessOfBreathAtRest: null, GetsShortnessOfBreathWithMildExertion: null,NoisyChestOccurrenceFrequency: null, ShortnessOfBreathPhysicalActivityOccurrenceFrequency: null, LungFunctionScore: 17, Copd: null, EligibleForOverread: true, WasHeldForOverread: true"
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.

@@ -1,0 +1,1 @@
+INSERT INTO "A1CStatusCode" ("A1CStatusCodeId", "StatusCode") VALUES  (8, 'LabOrderCreated') ON CONFLICT ("A1CStatusCodeId") DO NOTHING;

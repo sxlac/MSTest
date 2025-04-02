@@ -1,0 +1,61 @@
+trigger:
+  batch: "true"
+  paths:
+    include:
+      - service/egfr/*
+      - tests/ancillary-services-karate-tests/src/test/java/ancillary_services/features/egfr/*
+    exclude:
+      - service/egfr/docs/*
+      - service/egfr/flyway/*
+      - service/egfr/tf/*
+      - service/egfr/catalog-info.yaml
+      - service/egfr/mkdocs.yaml
+      - service/egfr/readme.md
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+variables:
+  - group: azuredevops
+  - group: dps-shared-all
+  - name: rootFolder
+    value: 'service'
+  - name: appName
+    value: 'egfr'
+  - name: pipelineFolder
+    value: 'azpipelines'
+  - name: Sln
+    value: 'Signify.Egfr.sln'
+  - name: projectName
+    value: 'signify-egfr-svc'
+
+stages:
+  - template: stagetemplates/dotnet-docker.yaml@templates
+    parameters:
+      coreVersion: 8.0.x
+      gitVersionFile: $(rootFolder)/$(appName)/GitVersion.yml
+      dockerComposeFile: $(rootFolder)/$(appName)/docker-compose.yaml
+      dockerComposeService: egfrsvc
+      kubernetesManifest: $(rootFolder)/$(appName)/k8s/deployment.yaml
+      solutionPath: $(rootFolder)/$(appName)/src/$(Sln)
+      projectName: $(projectName)
+      dotNetTestArguments: --filter FullyQualifiedName!~Signify.eGFR.System.Tests
+      ${{ if startsWith( variables['Build.SourceBranch'], 'refs/pull/' ) }}:
+        push: false
+      dockerCustomSteps:
+      # Adds a build tag from the full commit SHA of this build.
+      #
+      # This can be used to reference the precise build during deployment by
+      # other pipelines.
+      - task: Bash@3
+        displayName: 'Tag build'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[build.addbuildtag]$(Build.SourceVersion)"

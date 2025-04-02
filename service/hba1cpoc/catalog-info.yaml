@@ -1,0 +1,80 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: signify-hba1cpoc-svc
+  description: HBA1CPOC process manager
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  #    dev.azure.com/project-repo: HCC/ancillary # Leaving out for now until this is moved out of a mono-repo, as to avoid noise from the other process managers being displayed
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - dpsi
+    - hba1cpoc
+    - tier3
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51216991/HBA1CPOC+Process+Manager
+      title: HBA1CPOC Process Manager
+spec:
+  type: service
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  dependsOn:
+    - resource:hba1cpoc-db
+    - Resource:kafka
+  providesApis:
+    - hba1cpoc-kafka-events
+  consumesApis: # These must match exactly as they are named in their API in Backstage for Backstage to properly link them
+    - appointment-api
+    - cdi-api
+    - evaluation
+    - member
+    - okta
+    # - pdfdelivery # this is missing here because it's not configured in backstage. This is where it comes from: https://dev.azure.com/signifyhealth/HCC/_git/coreservices?version=GBmaster&_a=contents&path=/onprem/signify.cap.kafkapublisher. Should be added when available.
+    - provider
+    - providerpay
+    - rcm
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: hba1cpoc-db
+  description: Database for the HBA1CPOC process manager
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - dpsi
+    - postgres
+    - hba1cpoc-db
+spec:
+  type: database
+  lifecycle: production
+  owner: group:dps
+  system: dps
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hba1cpoc-kafka-events
+  description: HBA1CPOC Kafka Events API
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - kafka
+    - json
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219165/Lab+Status+Contracts
+      title: HBA1CPOC Status Contract
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219279/Lab+Result+Contracts
+      title: HBA1CPOC Result Contract
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  definition:
+    $text: https://dev.azure.com/signifyhealth/HCC/_git/ancillary?path=/service/hba1cpoc/docs/asyncapi.yaml
+    

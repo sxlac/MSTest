@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <TargetFramework>net8.0</TargetFramework>
+        <Version>0.7.3</Version>
+        <Authors>DPSI QE</Authors>
+        <Copyright>Signify Health</Copyright>
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="FluentResults" Version="3.16.0" />
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="Refit" Version="8.0.0" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="8.0.0" />
+        <PackageReference Include="Faker.Net" Version="2.0.163" />
+        <PackageReference Include="FluentAssertions" Version="6.12.1" />
+        <PackageReference Include="NServiceBus" Version="9.2.2" /> <!-- Added to avoid version conflict with Signify.EvaluationsApi.Core -->
+        <PackageReference Include="SSH.NET" Version="2024.2.0" />
+        <PackageReference Include="Signify.QE.Core.Authentication" Version="3.1.0" />
+        <PackageReference Include="Signify.QE.MSTest" Version="1.2.2" />
+        <PackageReference Include="Signify.QE.Core.Utilities" Version="3.2.0" />
+        <PackageReference Include="Signify.Dps.Test.Utilities" Version="4.8.0" />
+        <PackageReference Include="Dps.Labs.Webhook.Api.Test.Library" Version="1.0.0" />
+        <PackageReference Include="Signify.QE.MemberApi.WebApi.Library" Version="1.5.1290" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.eGFR.Core\Signify.eGFR.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.coverage.exclusions">
+            <Value>**/*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+</Project>

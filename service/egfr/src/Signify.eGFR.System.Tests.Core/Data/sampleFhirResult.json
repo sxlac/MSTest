@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "versionId": "f1f0c69e-bf6d-4780-a42f-ff5fdfcfc363",
+    "lastUpdated": "2024-10-07T11:07:23.239+00:00"
+  },
+  "type": "searchset",
+  "entry": [
+    {
+      "search": {
+        "mode": "match"
+      },
+      "fullUrl": "https://b2b-fhir-api.letsgetchecked-stg2.com/DiagnosticReport/b2262943-ef7c-4d21-b1c2-c60a8c2a4b05",
+      "resource": {
+        "meta": {
+          "versionId": "b9037e30-02cb-494b-9a29-19cdc47012ac",
+          "lastUpdated": "2024-07-12T15:54:52.004+00:00"
+        },
+        "contained": [
+          {
+            "id": "b56e631c-2737-4792-b834-33ebbc92edd4",
+            "identifier": [
+              {
+                "value": "476162",
+                "system": "http://ihr.signify.com/participantId"
+              }
+            ],
+            "resourceType": "Patient"
+          },
+          {
+            "id": "056b0883-15d2-434f-9db6-da084b9c14c9",
+            "name": [
+              {
+                "given": [
+                  "Robert"
+                ],
+                "family": "Mordkin"
+              }
+            ],
+            "identifier": [
+              {
+                "value": "1821020579",
+                "system": "http://hl7.org/fhir/sid/us-npi"
+              }
+            ],
+            "resourceType": "Practitioner"
+          },
+          {
+            "id": "fe781651-8e06-49c6-87de-f9193906f07d",
+            "code": {
+              "text": "Creatinine",
+              "coding": [
+                {
+                  "code": "2160-0",
+                  "system": "http://loinc.org",
+                  "display": "Creatinine"
+                }
+              ]
+            },
+            "note": [
+              {
+                "text": "Your test result shows your creatinine levels are normal. Creatinine is a waste product produced by your muscles. Your kidneys filter and remove creatinine from the blood and release it into your urine. The amount of creatinine produced depends on your size and muscle mass. Even though this test result is normal, if you are experiencing any symptoms, you should follow up with your healthcare provider. You can download your lab report to view your results and reference ranges."
+              }
+            ],
+            "status": "final",
+            "subject": {
+              "display": "Marie h D. Lowry",
+              "reference": "#b56e631c-2737-4792-b834-33ebbc92edd4"
+            },
+            "category": [
+              {
+                "text": "Laboratory",
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                    "display": "Laboratory"
+                  }
+                ]
+              }
+            ],
+            "performer": [
+              {
+                "display": "Robert Mordkin",
+                "reference": "#056b0883-15d2-434f-9db6-da084b9c14c9"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "code": "mg/dL",
+              "unit": "mg/dL",
+              "value": 90,
+              "system": "http://unitsofmeasure.org"
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "code": "mg/dL",
+                  "unit": "mg/dL",
+                  "value": 50,
+                  "system": "http://unitsofmeasure.org"
+                },
+                "high": {
+                  "code": "mg/dL",
+                  "unit": "mg/dL",
+                  "value": 100,
+                  "system": "http://unitsofmeasure.org"
+                }
+              }
+            ],
+            "effectiveDateTime": "2024-07-12T15:54:30.773+00:00"
+          },
+          {
+            "id": "7ac2be4a-cd1f-423f-ada5-4e98d21fb639",
+            "code": {
+              "text": "Creatinine in Urine",
+              "coding": [
+                {
+                  "code": "14959-1",
+                  "system": "http://loinc.org",
+                  "display": "Creatinine in Urine"
+                }
+              ]
+            },
+            "note": [
+              {
+                "text": "Your Urine Albumin Creatinine ratio (UACR) is high. This test measures how much albumin is in your urine and found your levels to be high. When high levels of albumin are found in the urine it can be an early indicator of kidney disease or a sign that your kidneys are not filtering properly. Albumin found in the urine is sometimes called urine microalbumin or microalbuminuria. This test result should be shared with your healthcare provider. It is important to let them know if you are experiencing any symptoms."
+              }
+            ],
+            "status": "final",
+            "subject": {
+              "display": "Marie h D. Lowry",
+              "reference": "#b56e631c-2737-4792-b834-33ebbc92edd4"
+            },
+            "category": [
+              {
+                "text": "Laboratory",
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                    "display": "Laboratory"
+                  }
+                ]
+              }
+            ],
+            "performer": [
+              {
+                "display": "Robert Mordkin",
+                "reference": "#056b0883-15d2-434f-9db6-da084b9c14c9"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "code": "mg/g",
+              "unit": "mg/g",
+              "value": 1.7,
+              "system": "http://unitsofmeasure.org"
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "code": "mg/g",
+                  "unit": "mg/g",
+                  "value": 0,
+                  "system": "http://unitsofmeasure.org"
+                },
+                "high": {
+                  "code": "mg/g",
+                  "unit": "mg/g",
+                  "value": 5,
+                  "system": "http://unitsofmeasure.org"
+                }
+              }
+            ],
+            "effectiveDateTime": "2024-07-12T15:54:30.773+00:00"
+          },
+          {
+            "id": "43b85094-01b5-4498-8ad2-91abe6c8e2c5",
+            "code": {
+              "text": "Estimated Glomerular Filtration Rate",
+              "coding": [
+                {
+                  "code": "98979-8",
+                  "system": "http://loinc.org",
+                  "display": "Estimated Glomerular Filtration Rate"
+                }
+              ]
+            },
+            "note": [
+              {
+                "text": "Your eGFR result is low. This result is an estimated calculation that helps determine how well your kidneys are filtering blood using different factors including your creatinine level, age, and sex. A low result can be a sign that your kidneys are not filtering properly. A result between 60 and 90 shows slightly reduced kidney function. This can be a result of many factors including infection, certain medications, or health conditions or it could be an early sign of kidney disease. You should share this result with your healthcare provider to assess your risk of kidney disease. A result below 60 indicates more significantly reduced kidney function and may be a sign of kidney disease. It is very important to follow up on this result with your healthcare provider for further investigation."
+              }
+            ],
+            "status": "final",
+            "subject": {
+              "display": "Marie h D. Lowry",
+              "reference": "#b56e631c-2737-4792-b834-33ebbc92edd4"
+            },
+            "category": [
+              {
+                "text": "Laboratory",
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                    "display": "Laboratory"
+                  }
+                ]
+              }
+            ],
+            "performer": [
+              {
+                "display": "Robert Mordkin",
+                "reference": "#056b0883-15d2-434f-9db6-da084b9c14c9"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "code": "ml/min/1.73m2",
+              "unit": "ml/min/1.73M2",
+              "value": 65,
+              "system": "http://unitsofmeasure.org"
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "code": "ml/min/1.73m2",
+                  "unit": "ml/min/1.73M2",
+                  "value": 60,
+                  "system": "http://unitsofmeasure.org"
+                },
+                "high": {
+                  "code": "ml/min/1.73m2",
+                  "unit": "ml/min/1.73M2",
+                  "value": 90,
+                  "system": "http://unitsofmeasure.org"
+                }
+              }
+            ],
+            "effectiveDateTime": "2024-07-12T15:54:30.773+00:00"
+          }
+        ],
+        "performer": [
+          {
+            "display": "Robert Mordkin",
+            "reference": "#056b0883-15d2-434f-9db6-da084b9c14c9"
+          }
+        ],
+        "identifier": [
+          {
+            "value": "LGC-5808-3064-6046",
+            "system": "http://letsgetchecked.com/results/barcode"
+          },
+          {
+            "value": "DTYWVP",
+            "system": "http://letsgetchecked.com/results/alphaCode"
+          }
+        ],
+        "resourceType": "DiagnosticReport",
+        "effectiveDateTime": "2024-07-12T15:54:30.773+00:00"
+      }
+    }
+  ],
+  "total": 1,
+  "timestamp": "2024-10-07T11:07:23.239+00:00",
+  "resourceType": "Bundle"
+}

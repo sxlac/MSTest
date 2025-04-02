@@ -1,0 +1,494 @@
+trigger: none
+
+parameters:
+  # Used to select the flyway build version from pipeline 1797 (ancillary-ckd-flyway-build)
+  - name: flywayMigrate
+    displayName: Deploy Flyway?
+    type: boolean
+    default: false
+  - name: flywayBuild
+    displayName: Flyway Build Version
+    type: string
+    default: ' '
+  - name: gitMergeStrategy
+    displayName: Git PR Merge Strategy
+    type: string
+    default: 'squash'
+    values:
+      - squash
+      - noFastForward
+      - rebase
+      - rebaseMerge
+
+variables:
+  - group: azuredevops
+  - group: new-relic
+  - group: slack-webhook-urls
+  - group: dps-shared-all
+  - group: hcc-cicd-automation-shared
+  - name: AppName
+    value: 'ckd'
+  - name: RootFolder
+    value: 'service'
+  - name: SourceBranch
+    value: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+    # Vars for post deploy PR merge step
+  - name: Repository
+    value: 'ancillary'
+  - name: MergeStrategy
+    value: ${{ parameters.gitMergeStrategy}}
+  - name: DeleteSourceBranch
+    value: true
+    # Vars for create jira deployment step
+  - name: JiraProjectKeyRegex
+    value: ANC-[0-9]*
+  - name: ProdTag
+    value: PROD
+  - name: ProductionTransitionState
+    value: 'ReadyForProduction'
+
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+  pipelines:
+    - pipeline: build
+      source: ancillary-ckd-build
+      trigger:
+        branches:
+          include:
+            - '*'
+        stages:
+          - Docker
+
+stages:
+  - stage: 'PromoteToDev'
+    jobs:
+      - job: waitForValidation
+        displayName: Wait for external validation
+        pool: server
+        timeoutInMinutes: 30 # job times out in 120 minutes
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 30 # task times out in 120 minutes
+            inputs:
+              notifyUsers: |
+                engineeringleads@signifyhealth.com 
+              instructions: 'Please approve to promote to DEV'
+              onTimeout: 'reject'
+  # DEV Stage
+  - template: deploy/kubernetes.yaml@templates
+    parameters:
+      env: DEV
+      namespace: $(DockerNamespace)
+      variablesFile: 'service/ckd/azpipelines/vars/varsDEV.yaml'
+      newRelicAppName: Signify.CKD.Svc-$(EnvironmentName)
+      variableGroups:
+        - ancillaryDevDeployment
+        - azure-aks-dev-sharedcluster
+      referenceBuildPipeline: true
+      customSteps:
+        - template: steptemplates/cicd-helpers/get-deployment.yaml@templates
+          parameters:
+            buildPipeline: ancillary-ckd-build
+  - ${{ if eq(parameters.flywayMigrate, true) }}:
+    - stage: FlywayMigrateDEV
+      variables:
+        - group: ancillaryDevDeployment
+        - group: azure-aks-dev-sharedcluster
+      dependsOn: DEV
+      jobs:
+        - job: RunFlywayMigration
+          steps:
+            - task: DownloadBuildArtifacts@1
+              inputs:
+                buildType: 'specific' # allows for targeting a specific build form another pipeline
+                project: '97f88eba-ecb2-484b-ae7c-c2d43a008cea' # HCC Id
+                pipeline: '1797' # the id of the pipeline that built the db artifact/drop
+                ${{ if eq(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'latest'
+                ${{ if ne(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'specific'
+                  buildId: ${{ parameters.flywayBuild }}
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: FlywayInstaller@0
+            - task: FlywayCLI@0
+              displayName: 'flyway migrate'
+              inputs:
+                workingDirectory: '$(System.ArtifactsDirectory)/drop/Flyway/sql'
+                command: 'migrate'
+                url: 'jdbc:postgresql://$(PostgresFlexServer).postgres.database.azure.com:5432/ckd?sslmode=require'
+                user: '$(PostgresFlywayUserCKD)'
+                password: '$(PostgresFlywayPasswordCKD)'
+                commandOptions: '-placeholders.Env=$(EnvironmentName)'
+
+## QA Environment is out of action, so commenting out on advice from team
+##  # QA Stage
+##  - stage: PromoteToQA
+##    jobs:
+##      - job: waitForValidation
+##        displayName: Wait for external validation
+##        pool: server
+##        timeoutInMinutes: 4320 # job times out in 3 days
+##        steps:
+##          - task: ManualValidation@0
+##            timeoutInMinutes: 1440 # task times out in 1 day
+##            inputs:
+##              notifyUsers: |
+##                engineeringleads@signifyhealth.com 
+##              instructions: 'Please approve to promote to QA'
+##              onTimeout: 'reject'
+##  - template: deploy/kubernetes.yaml@templates
+##    parameters:
+##      env: QA
+##      namespace: $(DockerNamespace)
+##      variablesFile: 'service/ckd/azpipelines/vars/varsQA.yaml'
+##      newRelicAppName: Signify.CKD.Svc-$(EnvironmentName)
+##      variableGroups:
+##        - ancillaryQADeployment
+##        - azure-aks-qa-sharedcluster
+##      referenceBuildPipeline: true
+##      customSteps:
+##        - template: steptemplates/cicd-helpers/get-deployment.yaml@templates
+##          parameters:
+##            buildPipeline: ancillary-ckd-build
+##
+##  - stage: FlywayMigrateQA
+##    variables:
+##      - group: ancillaryQADeployment
+##    dependsOn: QA
+##    jobs:
+##      - job: RunFlywayMigration
+##        steps:
+##          - task: DownloadBuildArtifacts@1
+##            inputs:
+##              buildType: 'specific' # allows for targeting a specific build form another pipeline
+##              project: '97f88eba-ecb2-484b-ae7c-c2d43a008cea' # HCC Id
+##              pipeline: '1797' # the id of the pipeline that built the db artifact/drop
+##              ${{ if eq(parameters.flywayBuild, 'latest') }}:
+##                buildVersionToDownload: 'latest'
+##              ${{ if ne(parameters.flywayBuild, 'latest') }}:
+##                buildVersionToDownload: 'specific'
+##                buildId: ${{ parameters.flywayBuild }}
+##              downloadType: 'single'
+##              artifactName: 'drop'
+##              downloadPath: '$(System.ArtifactsDirectory)'
+##          - task: FlywayInstaller@0
+##          - task: FlywayCLI@0
+##            displayName: 'flyway migrate'
+##            inputs:
+##              workingDirectory: '$(System.ArtifactsDirectory)/drop/Flyway/sql'
+##              command: 'migrate'
+##              url: 'jdbc:postgresql://$(PostgresFlexServer).postgres.database.azure.com:5432/ckd?sslmode=require'
+##              user: '$(PostgresFlywayUserCKD)'
+##              password: '$(PostgresFlywayPasswordCKD)'
+##              commandOptions: '-placeholders.Env=$(EnvironmentName)'
+  - stage: LatestCodeGate
+    jobs:
+      - job: LatestCodeGate
+        steps:
+          - template: steptemplates/cicd-helpers/azdo-code-gate.yaml@templates
+            parameters:
+              sourceBranch: $(SourceBranch)
+              itemPath: '$(RootFolder)/$(AppName)'
+  # UAT Stage
+  - stage: PromoteToUAT
+    jobs:
+      - job: waitForValidation
+        displayName: Wait for external validation
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              notifyUsers: |
+                engineeringleads@signifyhealth.com 
+              instructions: 'Please approve to promote to UAT'
+              onTimeout: 'reject'
+  - template: deploy/kubernetes.yaml@templates 
+    parameters:
+      env: UAT
+      namespace: $(DockerNamespace)
+      variablesFile: 'service/ckd/azpipelines/vars/varsUAT.yaml'
+      newRelicAppName: Signify.CKD.Svc-$(EnvironmentName)
+      variableGroups:
+        - ancillaryUATDeployment
+        - azure-aks-uat-sharedcluster
+      referenceBuildPipeline: true
+      customSteps:
+        - template: steptemplates/cicd-helpers/get-deployment.yaml@templates
+          parameters:
+            buildPipeline: ancillary-ckd-build
+  - ${{ if eq(parameters.flywayMigrate, true) }}:
+    - stage: FlywayMigrateUAT
+      variables:
+        - group: ancillaryUATDeployment
+        - group: azure-aks-uat-sharedcluster
+      dependsOn: UAT
+      jobs:
+        - job: RunFlywayMigration
+          steps:
+            - task: DownloadBuildArtifacts@1
+              inputs:
+                buildType: 'specific' # allows for targeting a specific build form another pipeline
+                project: '97f88eba-ecb2-484b-ae7c-c2d43a008cea' # HCC Id
+                pipeline: '1797' # the id of the pipeline that built the db artifact/drop
+                ${{ if eq(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'latest'
+                ${{ if ne(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'specific'
+                  buildId: ${{ parameters.flywayBuild }}
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: FlywayInstaller@0
+            - task: FlywayCLI@0
+              displayName: 'flyway migrate'
+              inputs:
+                workingDirectory: '$(System.ArtifactsDirectory)/drop/Flyway/sql'
+                command: 'migrate'
+                url: 'jdbc:postgresql://$(PostgresFlexServer).postgres.database.azure.com:5432/ckd?sslmode=require'
+                user: '$(PostgresFlywayUserCKD)'
+                password: '$(PostgresFlywayPasswordCKD)'
+                commandOptions: '-placeholders.Env=$(EnvironmentName)'
+  - stage: UATIntegrationTests
+    variables:
+      - group: ancillary-qe-pipeline-uat
+    dependsOn: UAT
+    jobs:
+      - template: ../../../tests/ancillary-services-karate-tests/src/test/java/ancillary_services/features/ckd/ckd-test-automation-template.yaml
+  # PROD Stage
+  - stage: PromoteToPROD
+    jobs:
+      - job: waitForValidation
+        displayName: Wait for external validation
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              notifyUsers: |
+                engineeringleads@signifyhealth.com 
+              instructions: 'Please approve to promote to PROD'
+              onTimeout: 'reject'
+  - stage: PRODLatestCodeGate
+    jobs:
+      - job: LatestCodeGate
+        steps:
+          - template: steptemplates/cicd-helpers/azdo-code-gate.yaml@templates
+            parameters:
+              sourceBranch: $(SourceBranch)
+              itemPath: '$(RootFolder)/$(AppName)'
+  - stage: PRODQualityGate
+    jobs:
+      - job: PRODQualityGate
+        steps:
+          - template: steptemplates/cicd-helpers/azdo-quality-gate.yaml@templates
+            parameters:
+              sourceBranch: $(SourceBranch)
+  - stage: CreateJiraDeployment
+    dependsOn:
+      - UATIntegrationTests
+      - PRODQualityGate
+    variables:
+      - name: TestCycleKey
+        value: $[stageDependencies.UATIntegrationTests.Integration_Tests.outputs['RunKarateTests.testCycleKey']]
+    jobs:
+    - job: GatherReleaseDescriptionData
+      displayName: Gather Release Description Data
+      steps:
+        - template: steptemplates/cicd-helpers/azdo-previous-prod-pipeline.yaml@templates
+          parameters:
+            pipelineTag: $(ProdTag)
+        - template: steptemplates/gitversion.yaml@templates
+          parameters:
+            gitVersionFile: $(RootFolder)/$(AppName)/gitversion.yml
+    - job: CreateJiraDeploymentTicket
+      displayName: Create Jira Deployment Ticket
+      dependsOn: GatherReleaseDescriptionData
+      variables:
+        - group: dps-shared-all
+        - name: PrevProdPipelineBuildId
+          value: $[dependencies.GatherReleaseDescriptionData.outputs['previousPipelineDiscovery.previousProdPipelineBuildId']]
+        - name: PrevProdPipelineBuildNum
+          value: $[dependencies.GatherReleaseDescriptionData.outputs['previousPipelineDiscovery.previousProdPipelineBuildNum']]
+        - name: ArtifactVersion
+          value: $[dependencies.GatherReleaseDescriptionData.outputs['Output_GitVersion_Variables.GitVersion_VersionWithSha']]
+      steps:
+        - template: steptemplates/cicd-helpers/jira-create-deployment.yaml@templates
+          parameters:
+            appName: $(AppName)
+            prevProdPipelineBuildId: $(PrevProdPipelineBuildId)
+            prevProdPipelineBuildNum: $(PrevProdPipelineBuildNum)
+            sourceBranchName: $(SourceBranch)
+            jiraProjectKeyRegex: $(JiraProjectKeyRegex)
+            jiraCliAccessToken: $(JiraCliAccessToken)
+            jiraCliAccessUsername: $(JiraCliAccessUsername)
+            jiraTransitionState: $(ProductionTransitionState)
+            artifactVersion: $(ArtifactVersion)
+    - job: TransitionJiraDeployment
+      displayName: Transition Jira Deployment Ticket
+      dependsOn: CreateJiraDeploymentTicket
+      variables:
+        - group: dps-shared-all
+        - name: JiraDeploymentKey
+          value: $[dependencies.CreateJiraDeploymentTicket.outputs['createDeploymentTicket.stageDeploymentTicketKey']]
+        - name: JiraDeployTransitionState
+          value: 'InProgress'
+      steps:
+        - template: steptemplates/cicd-helpers/jira-transition-deployment.yaml@templates
+          parameters:
+            jiraDeploymentKey: $(JiraDeploymentKey)
+            jiraDeployTransitionState: $(JiraDeployTransitionState)
+            jiraCliAccessToken: $(JiraCliAccessToken)
+            jiraCliAccessUsername: $(JiraCliAccessUsername)
+    - job: LinkTestCycleToDeploymentTicket
+      displayName: Link TestCycle To Deployment Ticket
+      dependsOn: CreateJiraDeploymentTicket
+      variables:
+        - group: dps-shared-all
+        - name: JiraDeploymentKey
+          value: $[dependencies.CreateJiraDeploymentTicket.outputs['createDeploymentTicket.stageDeploymentTicketKey']]
+        - name: TestCycleKey
+          value: $(TestCycleKey)
+      steps:
+        - template: steptemplates/cicd-helpers/jira-link-testcycle-to-deployment.yaml@templates
+          parameters:
+            JiraDeploymentKey: $(JiraDeploymentKey)
+            TestCycleKey: $(TestCycleKey)
+            jiraCliAccessToken: $(JiraCliAccessToken)
+            jiraCliAccessUsername: $(JiraCliAccessUsername)
+  - template: deploy/kubernetes.yaml@templates
+    parameters:
+      env: PROD
+      namespace: $(DockerNamespace)
+      variablesFile: 'service/ckd/azpipelines/vars/varsPROD.yaml'
+      newRelicAppName: Signify.CKD.Svc-$(EnvironmentName)
+      variableGroups:
+        - ancillaryProdDeployment
+        - azure-aks-prod-sharedcluster
+      referenceBuildPipeline: true
+      customSteps:
+        - template: steptemplates/cicd-helpers/get-deployment.yaml@templates
+          parameters:
+            buildPipeline: ancillary-ckd-build
+  - ${{ if eq(parameters.flywayMigrate, true) }}:
+    - stage: FlywayMigratePROD
+      variables:
+        - group: ancillaryProdDeployment
+        - group: azure-aks-prod-sharedcluster
+      dependsOn: PROD
+      jobs:
+        - job: RunFlywayMigration
+          steps:
+            - task: DownloadBuildArtifacts@1
+              inputs:
+                buildType: 'specific' # allows for targeting a specific build form another pipeline
+                project: '97f88eba-ecb2-484b-ae7c-c2d43a008cea' # HCC Id
+                pipeline: '1797' # the id of the pipeline that built the db artifact/drop
+                ${{ if eq(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'latest'
+                ${{ if ne(parameters.flywayBuild, 'latest') }}:
+                  buildVersionToDownload: 'specific'
+                  buildId: ${{ parameters.flywayBuild }}
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: FlywayInstaller@0
+            - task: FlywayCLI@0
+              displayName: 'flyway migrate'
+              inputs:
+                workingDirectory: '$(System.ArtifactsDirectory)/drop/Flyway/sql'
+                command: 'migrate'
+                url: 'jdbc:postgresql://$(PostgresFlexServer).postgres.database.azure.com:5432/ckd?sslmode=require'
+                user: '$(PostgresFlywayUserCKD)'
+                password: '$(PostgresFlywayPasswordCKD)'
+                commandOptions: '-placeholders.Env=$(EnvironmentName)'
+  - stage: PRODIntegrationTests
+    variables:
+      - group: ancillary-qe-pipeline-prod
+    dependsOn: PROD
+    jobs:
+      - template: ../../../tests/ancillary-services-karate-tests/src/test/java/ancillary_services/features/ckd/ckd-test-automation-prod.yaml
+
+#  # Post Deploy Stage - Close or Fail Jira, Set Tag accordingly, Merge PR
+  - stage: PostDeploy
+    dependsOn:
+      - CreateJiraDeployment
+      - PROD
+      - PRODIntegrationTests
+    condition: succeededOrFailed('PRODIntegrationTests')
+    variables:
+      - group: dps-shared-all
+      - name: JiraDeploymentKey
+        value: $[stageDependencies.CreateJiraDeployment.TransitionJiraDeployment.outputs['transitionDeployment.stageDeploymentTicketKey']]
+    jobs:
+      - job: waitForPostDeployApproval
+        displayName: Validate deployment is successful
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              notifyUsers: |
+                engineeringleads@signifyhealth.com 
+              instructions: 'Please confirm deployment is successful'
+              onTimeout: 'reject'
+      - job: FailDeployment
+        dependsOn: waitForPostDeployApproval
+        condition: failed()
+        variables:
+          - name: JiraDeployTransitionState
+            value: 'Failed'
+        steps:
+          - template: steptemplates/cicd-helpers/jira-transition-deployment.yaml@templates
+            parameters:
+              jiraDeploymentKey: $(JiraDeploymentKey)
+              jiraDeployTransitionState: $(JiraDeployTransitionState)
+              jiraCliAccessToken: $(JiraCliAccessToken)
+              jiraCliAccessUsername: $(JiraCliAccessUsername)
+      - job: CloseDeployment
+        dependsOn: waitForPostDeployApproval
+        condition: succeeded()
+        variables:
+          - name: JiraDeployTransitionState
+            value: 'Deployed'
+        steps:
+          - template: steptemplates/cicd-helpers/jira-transition-deployment.yaml@templates
+            parameters:
+              jiraDeploymentKey: $(JiraDeploymentKey)
+              jiraDeployTransitionState: $(JiraDeployTransitionState)
+              jiraCliAccessToken: $(JiraCliAccessToken)
+              jiraCliAccessUsername: $(JiraCliAccessUsername)
+          - template: steptemplates/cicd-helpers/azdo-set-tag.yaml@templates
+            parameters:
+              pipelineTag: $(ProdTag)
+      - job: MergeCompletePR
+        displayName: Merge PR following successful deployment
+        dependsOn: waitForPostDeployApproval
+        condition: succeeded()
+        variables:
+          - name: JiraTicketTransitionState
+            value: 'Done'
+        steps:
+          - template: steptemplates/cicd-helpers/azdo-merge-pr.yaml@templates
+            parameters:
+              mergeStrategy: $(MergeStrategy)
+              deleteSourceBranch: $(DeleteSourceBranch)
+          - template: steptemplates/cicd-helpers/jira-transition-ticket.yaml@templates
+            parameters:
+              jiraTicketTransitionState: $(JiraTicketTransitionState)
+              jiraProjectKeyRegex: $(JiraProjectKeyRegex)
+              sourceBranch: $(SourceBranch)
+              jiraCliAccessToken: $(JiraCliAccessToken)
+              jiraCliAccessUsername: $(JiraCliAccessUsername)

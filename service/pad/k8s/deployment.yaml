@@ -1,0 +1,172 @@
+---
+# NOTE: PDBs are immutable prior to v1.15. Starting with a maxUnavailable of 1 is good practice, so a deployment with 3 replicas will always have at least 2 running.
+# Additional configuration can be found at https://kubernetes.io/docs/tasks/run-application/configure-pdb/#think-about-how-your-application-reacts-to-disruptions
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  maxUnavailable: #{PDB:MaxUnavailable}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}-config
+type: Opaque
+stringData:
+  db-connstr: #{DBConnectionString}
+  asb-connstr: #{AzureServiceBus}
+  client-secret: #{OktaClientSecret}
+  ccloud-password: #{CCloudPassword}
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: #{DockerNamespace}
+  name: pad-smbcreds
+type: microsoft.com/smb
+stringData:
+  username: #{WaveformDirectory:Username}
+  password: #{WaveformDirectory:Password}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+  labels:
+    app: #{DockerName}
+spec:
+  clusterIP: None
+  selector:
+    app: #{DockerName}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  replicas: #{Replicas}
+  revisionHistoryLimit: 2
+  serviceName: #{DockerName}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+  template:
+    metadata:
+      labels:
+        app: #{DockerName}
+        version: #{VersionWithSha}
+    spec:
+      containers:
+        - image: "signifyhealth.azurecr.io/#{ImageName}"
+          imagePullPolicy: Always
+          name: #{DockerName}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LivenessProbe__Uri
+              value: "http://*:5051/health/live/" # Note these paths must end in a '/'
+            - name: DOTNET_ENVIRONMENT
+              value: #{EnvironmentName}
+            - name: NEW_RELIC_APP_NAME
+              value: #{ProjectsName}-#{EnvironmentName}
+            - name: NEW_RELIC_LICENSE_KEY
+              value: #{NewRelicLicenseKey}
+            - name: Serilog__MinimumLevel__Default
+              value: #{SerilogMinimumLevel}
+            - name: Serilog__Properties__Environment
+              value: #{EnvironmentName}
+            - name: Serilog__Properties__App
+              value: #{ProjectsName}
+            - name: Serilog__Properties__Version
+              value: #{VersionWithSha}
+            - name: ApiUrls__ProviderPayApiUrl
+              value: #{ProviderPayUrl}
+            - name: AkkaKafkaStream__KafkaBrokers
+              value: #{KafkaBrokers}
+            - name: AkkaKafkaStream__Username
+              value: #{CCloudUsername}
+            - name: AkkaKafkaStream__Password
+              valueFrom:
+               secretKeyRef:
+                 key: ccloud-password
+                 name: #{DockerName}-config
+            - name: AkkaKafkaStream__PersistenceConnection
+              valueFrom:
+               secretKeyRef:
+                 key: db-connstr
+                 name: #{DockerName}-config
+            - name: ConnectionStrings__DB
+              valueFrom:
+                secretKeyRef:
+                  key: db-connstr
+                  name: #{DockerName}-config
+            - name: ConnectionStrings__AzureServiceBus
+              valueFrom:
+                secretKeyRef:
+                  key: asb-connstr
+                  name: #{DockerName}-config
+            - name: Okta__Domain
+              value: #{OktaApiUrl}
+            - name: Okta__ClientId
+              value: #{OktaClientId}
+            - name: Okta__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: #{DockerName}-config
+            - name: LaunchDarkly__SharedLicenseKey
+              value: #{LaunchDarkly:SharedLicenseKey}
+            - name: LaunchDarkly__ProjectLicenseKey
+              value: #{LaunchDarkly:ProjectLicenseKey}
+          livenessProbe: # alternately startupProbe or readinessProbe
+            httpGet:
+              path: "/health/live/"
+              port: 5051
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 6
+          resources:
+            requests:
+              cpu: #{ResourceRequest:Cpu} # Set to 100m
+              memory: #{ResourceRequest:Memory} # Set to 250M
+            limits:
+              cpu: #{ResourceLimit:Cpu} # Set to 500m
+              memory: #{ResourceLimit:Memory} # Set to 500M
+          volumeMounts:
+            - name: particular
+              mountPath: /usr/share/ParticularSoftware
+              readOnly: true
+            - name: ca-pemstore
+              mountPath: /etc/ssl/certs/censeoca01-root.pem
+              subPath: censeoca01-root.pem
+              readOnly: true
+            - name: waveform-directory
+              mountPath: /usr/share/waveform
+      volumes:
+        - name: particular
+          secret:
+            secretName: particular
+        - name: ca-pemstore
+          secret:
+            secretName: ca-pemstore
+        - name: waveform-directory
+          flexVolume:
+              driver: "microsoft.com/smb"
+              secretRef:
+                name: pad-smbcreds
+              options:
+                source: #{WaveformDirectory}
+                mountoptions: "vers=3.0,dir_mode=0777,file_mode=0777"

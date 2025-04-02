@@ -1,0 +1,538 @@
+asyncapi: '2.6.0'
+info:
+  title: eGFR API
+  version: '1.0.0'
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  egfr_status/Performed:
+    description: An event that signals egfr test was performed
+    subscribe:
+      summary: An event that signals egfr test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  egfr_status/NotPerformed:
+    description: An event that signals egfr test was not performed
+    subscribe:
+      summary: An event that signals egfr test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  egfr_status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  egfr_status/BillRequestNotSent:
+    description: An event that signals bill request not sent
+    subscribe:
+      summary: An event that signals bill request not sent
+      message:
+        $ref: '#/components/messages/BillRequestNotSent'
+  egfr_status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  egfr_status/ProviderNonPayableEventReceived:
+    description: An event that signals non payable test
+    subscribe:
+      summary: An event that signals non payable test
+      message:
+        $ref: '#/components/messages/ProviderNonPayableEventReceived'
+  egfr_status/ProviderPayableEventReceived:
+    description: An event that signals payable test
+    subscribe:
+      summary: An event that signals payable test
+      message:
+        $ref: '#/components/messages/ProviderPayableEventReceived'
+  egfr_results/ResultsReceived:
+    description: An event that signals lab results have been received
+    subscribe:
+      summary: An event that signals lab results have been received
+      message:
+        $ref: '#/components/messages/ResultsReceived'
+  dps_oms_order/OrderCreationEvent:
+    description: An event that signals the OMS that an order can be created with vendor
+    subscribe:
+      summary: An event that signals the OMS that an order can be created with vendor
+      message:
+        $ref: '#/components/messages/OrderCreationEvent'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: eGFR test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: eGFR test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    BillRequestNotSent:
+      name: BillRequestNotSent
+      title: BillRequestNotSent
+      summary: Bill request has not been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestNotSent"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    ProviderNonPayableEventReceived:
+      name: ProviderNonPayableEventReceived
+      title: ProviderNonPayableEventReceived
+      summary: Non payable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderNonPayableEventReceived"
+    ProviderPayableEventReceived:
+      name: ProviderPayableEventReceived
+      title: ProviderPayableEventReceived
+      summary: Payable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayableEventReceived"
+    ResultsReceived:
+      name: ResultsReceived
+      title: ResultsReceived
+      summary: Lab results received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ResultsReceived"
+    OrderCreationEvent:
+      name: OrderCreationEvent
+      title: OrderCreationEvent
+      summary: Order to be created with vendor
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/OrderCreationEvent"
+  schemas:
+    Performed:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        Barcode:
+          type: string
+          format: string
+          description: Barcode for this test
+          example: 293842
+    NotPerformed:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Member apprehension
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Normality is Undetermined
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+    BillRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: EGFR
+        PdfDeliveryDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773+00:00
+    BillRequestNotSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: EGFR
+        PdfDeliveryDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderPayRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        ParentEventDateTime:
+          type: string
+          format: DateTimeOffset
+          description: Date and time contained within the parent kafka event that triggered this status change
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderNonPayableEventReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderPay
+          example: CDIPassedEvent
+        Reason:
+          type: string
+          format: string
+          description: Reason for non payable
+          example: Normality is Undetermined
+    ProviderPayableEventReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderPay
+          example: CDIPassedEvent
+    ResultsReceived:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: EGFR
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date results received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: ["A","N","U"]
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Result:
+          type: object
+          format: Group
+          properties:
+            Result:
+              type: string
+              format: string
+              description: eGFRResult of the Lab Result
+            AbnormalIndicator:
+              type: string
+              format: string
+              description: Identifier of the Member Normality in Code based on eGFRResult i.e. N/A/U
+          description: Identifier of lab result and normality indicator
+          example:  "Result: 65, AbnormalIndicator: N"
+    OrderCreationEvent:
+      type: object
+      required: [ EventId, EvaluationId, ProductCode, Vendor, Context ]
+      properties:
+        EventId:
+          type: string
+          format: uuid
+          description: Identifier of this event
+          example: "F9A3F9C9-BCBA-40A7-A371-21FDEB20CCC2"
+        EvaluationId:
+          type: integer
+          format: long
+          description: Identifier of this evaluation
+          example: 293847
+        ProductCode:
+          type: string
+          format: string
+          description: Product Code for the exam
+          example: "EGFR"
+        Vendor:
+          type: string
+          format: string
+          description: Vendor for this Order Creation event
+          example: "LetsGetChecked"
+        Context:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+          description: Additional info to provide context
+          example:  {"LgcBarcode": "LGC-4784-1128-8557", "LgcAlphaCode": "KVCGBQ"}
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.

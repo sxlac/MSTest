@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Signify.HBA1CPOC.Database</id>
+    <version>$version$</version>
+	<authors>HBA1CPOC</authors>
+    <title>Ancillary HBA1CPOC Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Ancillary HBA1CPOC Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+  </metadata>
+  <files>
+	<file src="flyway\**\*.*" target="tools\flyway" />
+  </files>
+</package>

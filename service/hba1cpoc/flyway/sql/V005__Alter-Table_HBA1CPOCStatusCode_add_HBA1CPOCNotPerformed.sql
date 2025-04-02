@@ -1,0 +1,2 @@
+INSERT INTO "HBA1CPOCStatusCode" ("HBA1CPOCStatusCodeId", "StatusCode")
+SELECT 7, 'HBA1CPOCNotPerformed' WHERE NOT EXISTS (SELECT * FROM "HBA1CPOCStatusCode" WHERE "HBA1CPOCStatusCodeId" = 7)

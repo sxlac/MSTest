@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591</NoWarn>
+		<WarningsAsErrors>CS4014;</WarningsAsErrors>
+	</PropertyGroup>
+	
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
+      <PackageReference Include="FluentResults" Version="3.15.2" />
+      <PackageReference Include="Mediatr" Version="12.3.0" />
+      <PackageReference Include="Microsoft.Csharp" Version="4.7.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+      <PackageReference Include="NewRelic.Agent.Api" Version="10.26.0" />
+      <PackageReference Include="Npgsql" Version="8.0.3" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+      <PackageReference Include="NServiceBus" Version="8.1.6" />
+      <PackageReference Include="Polly" Version="8.4.0" />
+      <PackageReference Include="Refit" Version="8.0.0" />
+      <PackageReference Include="Signify.AkkaStreams.Kafka" Version="4.2.5" />
+      <PackageReference Include="Signify.Okta.Messages" Version="1.0.0" />
+      <PackageReference Include="Signify.AkkaStreams.Postgres" Version="4.2.5" />
+      <PackageReference Include="System.IO.Abstractions" Version="21.0.22" />
+      <PackageReference Include="Signify.Dps.Observability.Library" Version="1.0.0" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<!--Needed to resolve a dependency issue with AkkaStreams. See Example 2 on
+      https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1605-->
+		<PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
+	</ItemGroup>
+	
+    <ItemGroup>
+      <ProjectReference Include="..\Signify.PAD.Messages\Signify.PAD.Messages.csproj" />
+    </ItemGroup>
+</Project>

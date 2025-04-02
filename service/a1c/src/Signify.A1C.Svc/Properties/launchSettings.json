@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Signify.A1C.Svc": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

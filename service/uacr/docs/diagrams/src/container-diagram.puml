@@ -1,0 +1,64 @@
+@startuml uacr-container-diagram
+
+title uACR Process Manager Container Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+
+System_Ext(asb, "Azure Service Bus", "Backing for NServiceBus")
+
+Enterprise_Boundary(sh, "Signify") {
+    Container_Ext(evaluation, "Evaluation API", ".NET Web API", "Produces evaluation events and provides form questions & answers the provider entered during the IHE")
+    Container_Ext(appointment, "Appointment API", ".NET Web API", "Provides appointment information, used to determine which US state the evaluation was conducted in (for billing requirements)")
+    Container_Ext(provider, "Provider API", ".NET Web API", "Provides provider information, used to determine which provider to pay when an FOBT kit is left behind with the member and if clinically valid lab results are received")
+    Container_Ext(member, "Member API", ".NET Web API", "Provides member information")
+    Container_Ext(rcm, "RCM API", ".NET Web API", "")
+    Container_Ext(pp, "Provider Pay API", ".NET Web API", "")
+
+    System_Boundary(uacr, "uACR System"){
+        Container(pm, "uACR Process Manager", ".Net Core", "Orchestrates uACR workflow")
+
+        ContainerDb(db, "uACR DB", "PostgreSQL", "Stores evaluations, lab data, statuses, billing requests, provider pay requests, etc")
+    }
+
+    System_Boundary(kafka, "Kafka System") {
+        SystemQueue_Ext(q_evaluation, "Evaluation Events", "[evaluation]")
+        SystemQueue_Ext(q_pdfdelivery, "PDF Delivery Events", "[pdfdelivery]")
+        SystemQueue_Ext(q_oms, "Order Request Events", "[dps_oms_order]")
+        SystemQueue_Ext(q_lab_results, "Lab Result Events", "[dps_labresult_uacr]")
+        SystemQueue_Ext(q_cdi, "CDI Events", "[cdi_events]")
+        SystemQueue_Ext(q_bills, "Billing Events", "[rcm_bill]")
+        SystemQueue(q_uacr_status, "uACR Status Events", "[uacr_status]\n\nIngested into Snowflake for reporting and letter generation")
+        SystemQueue(q_uacr_results, "uACR Result Events", "[uacr_results]\n\nIngested into Snowflake for reporting and letter generation")
+    }
+}
+
+BiRel_Left(pm, asb, "Enqueues/dequeues events to be processed", "AMQP :443")
+Rel(pm, db, "Reads/writes data to/from", "TCP :5432")
+
+Rel(q_evaluation, pm, "Consumes", "TCP :9092")
+
+Rel(pm, evaluation, "Queries", "HTTPS :443")
+Rel(pm, appointment, "Queries", "HTTPS :443")
+Rel(pm, provider, "Queries", "HTTPS :443")
+Rel(pm, member, "Queries", "HTTPS :443")
+
+Rel(pm, q_oms, "Publishes order requests to", "TCP :9092")
+
+Rel(q_lab_results, pm, "Consumes", "TCP :9092")
+
+Rel(q_cdi, pm, "Consumes", "TCP :9092")
+
+Rel(q_pdfdelivery, pm, "Consumes", "TCP :9092")
+
+Rel(pm, rcm, "Sends billing requests to", "HTTPS :443")
+Rel(q_bills, pm, "Consumes", "TCP :9092")
+Rel(pm, pp, "Sends provider pay requests to", "HTTPS :443")
+
+Rel(pm, q_uacr_status, "Publishes uACR status events to", "TCP :9092")
+Rel(pm, q_uacr_results, "Publishes uACR test results to", "TCP :9092")
+
+SHOW_LEGEND()
+
+@enduml

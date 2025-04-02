@@ -1,0 +1,15 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.idea
+/.vs
+/DEE.Service.Obsolete/src
+/Dee.Rcm.PdfDelivery.Tool
+.DS_Store
+.vscode
+/target/karate*
+karate-reports
+azpipelines/templates/steptemplates/.idea/
+.terraform/
+.terraform.lock.hcl

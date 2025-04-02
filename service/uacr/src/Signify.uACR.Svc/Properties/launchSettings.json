@@ -1,0 +1,22 @@
+{
+  "profiles": {
+    "UACR.Svc": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "UACR.Service.UAT": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "UAT"
+      }
+    },
+    "Signify.uACR.Svc.local": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Local"
+      }
+    }
+  }
+}

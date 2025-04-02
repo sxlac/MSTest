@@ -1,0 +1,1 @@
+﻿global using static Signify.Spirometry.Svc.System.Tests.Core.Constants.TestConstants;

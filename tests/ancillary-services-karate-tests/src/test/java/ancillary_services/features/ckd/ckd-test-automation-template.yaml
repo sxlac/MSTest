@@ -1,0 +1,121 @@
+parameters:
+  - name: variableGroup
+    type: string 
+    default: ancillary-qe-pipeline-uat
+  - name: dco_environment_variables
+    type: string
+    default: "-e OKTA_USERNAME=$(OKTA_USERNAME) 
+    -e OKTA_PASSWORD=$(OKTA_PASSWORD) 
+    -e KAFKA_USERNAME=$(KAFKA_USERNAME) 
+    -e KAFKA_PASSWORD=$(KAFKA_PASSWORD) 
+    -e KAFKA_BOOTSTRAP_SERVERS=$(KAFKA_BOOTSTRAP_SERVERS) 
+    -e KAFKA_GROUP_ID=$(KAFKA_GROUP_ID)
+    -e KAFKA_PUB_USERNAME=$(KAFKA_PUB_USERNAME) 
+    -e KAFKA_PUB_PASSWORD=$(KAFKA_PUB_PASSWORD) 
+    -e CKD_DB_USERNAME=$(CKD_DB_USERNAME) 
+    -e CKD_DB_PASSWORD=$(CKD_DB_PASSWORD) 
+    -e CKD_DB_URL=$(CKD_DB_URL)
+    -e SMB_PASSWORD=$(SMB_PASSWORD)
+    -e SMB_USERNAME=$(SMB_USERNAME)
+    -e ZEPHYR_API_TOKEN=$(ZEPHYR_API_TOKEN)
+    -e ZEPHYR_API_URL=$(ZEPHYR_API_URL)
+    -e CREATE_TEST_CYCLE=$(CREATE_TEST_CYCLE)
+    -e ZEPHYR_DESCRIPTION='$(Build.SourceVersionMessage)'
+    -e COMMIT_ID=$(Build.SourceVersion)
+    -e ANCILLARY_SERVICE='CKD'"
+  - name: dco_file_location
+    type: string
+    default: "tests/ancillary-services-karate-tests"
+  - name: karate_env
+    type: string
+    default: uat
+
+jobs:
+- job: CKD_Tests
+  displayName: ancillary.ckd.service.tests
+  pool:
+    name: uat-linux-test
+  steps:
+  - checkout: self
+    clean: true
+
+  - task: Docker@2
+    displayName: Docker Login
+    inputs:
+      containerRegistry: signifyhealthdev
+      command: login
+
+  - task: Bash@3
+    displayName: Initial cleanup for containers
+    inputs:
+      targetType: inline
+      script: >-
+        docker compose -f docker-compose.yml down --remove-orphans
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Spin up Docker and run Karate tests
+    inputs:
+      targetType: inline
+      script: |
+        docker compose up --build -d
+        docker compose run ${{ parameters.dco_environment_variables }} ancillary-karate-tests mvn test -Dkarate.env="${{ parameters.karate_env }}" "-Dkarate.options=--tags @ckd"
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Docker Logs
+    condition: succeededOrFailed()
+    inputs:
+      targetType: inline
+      script: docker compose -f docker-compose.yml logs
+      workingDirectory: $(System.DefaultWorkingDirectory)//${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Down the containers after running tests
+    condition: always()
+    inputs:
+      targetType: inline
+      script: >-
+        docker compose -f docker-compose.yml down --remove-orphans
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/karate-reports/**.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: $(Build.DefinitionName) Results
+
+  - task: CopyFiles@2
+    displayName: Copy JUnit XML Files to Artifact Staging
+    condition: succeededOrFailed()
+    inputs:
+      SourceFolder: $(System.DefaultWorkingDirectory)
+      Contents: '**/karate-reports/**.xml'
+      TargetFolder: $(build.artifactstagingdirectory)
+      preserveTimestamp: true
+      
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Test Results Artifact
+    condition: succeededOrFailed()
+    inputs:
+      ArtifactName: $(Build.DefinitionName)-junit-reports
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Karate Test Html Reports
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/target/karate-reports
+      artifact: KarateHTMLReport_$(System.JobId)
+      publishLocation: 'pipeline'
+
+  # - task: PublishPipelineArtifact@1
+  #   displayName: Publish Zephyr Zip file
+  #   condition: succeededOrFailed()
+  #   inputs:
+  #     targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/src/test/java/helpers/zephyr/zephyr.zip
+  #     artifact: ZephyrZip_$(System.JobId)
+  #     publishLocation: 'pipeline'
+...

@@ -1,0 +1,627 @@
+asyncapi: '2.6.0'
+info:
+  title: DEE API
+  version: '1.0.0'
+  description: Events published from DEE Process Manager
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  dee_status/Performed:
+    description: An event that signals dee test was performed
+    subscribe:
+      summary: An event that signals dee test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  dee_status/NotPerformed:
+    description: An event that signals dee test was not performed
+    subscribe:
+      summary: An event that signals dee test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  dee_status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  dee_status/BillRequestNotSent:
+    description: An event that signals bill request not sent
+    subscribe:
+      summary: An event that signals bill request not sent
+      message:
+        $ref: '#/components/messages/BillRequestNotSent'
+  dee_status/ResultsReceived:
+    description: An event containing the dee exam test results
+    subscribe:
+      summary: An event containing the dee exam test results
+      message:
+        $ref: '#/components/messages/ResultsReceived'
+  dee_status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  dee_status/ProviderPayableEventReceived:
+    description: An event signalling that the exam does satisfy provider payable criteria
+    subscribe:
+      summary: An event signalling that the exam does satisfy provider payable criteria
+      message:
+        $ref: '#/components/messages/ProviderPayableEventReceived'
+  dee_results/Result:
+    description: An event detailing the results of the test
+    subscribe:
+      summary: An event detailing the results of the test
+      message:
+        $ref: '#/components/messages/Result'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: DEE test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: DEE test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    BillRequestNotSent:
+      name: BillRequestNotSent
+      title: BillRequestNotSent
+      summary: Bill request has not been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestNotSent"
+    ResultsReceived:
+      name: ResultsReceived
+      title: ResultsReceived
+      summary: Results received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ResultsReceived"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    ProviderNonPayableEventReceived:
+      name: ProviderNonPayableEventReceived
+      title: ProviderNonPayableEventReceived
+      summary: ProviderNonPayable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderNonPayableEventReceived"
+    ProviderPayableEventReceived:
+      name: ProviderPayableEventReceived
+      title: ProviderPayableEventReceived
+      summary: ProviderPayable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayableEventReceived"
+    Result:
+      name: Result
+      title: Result
+      summary: DEE test result
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Result"
+  schemas:
+    Performed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, RetinalImageTestingNotes]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        RetinalImageTestingNotes:
+          type: string
+          format: string
+          description: Retinal Image Testing Notes
+    NotPerformed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ReasonType, Reason, ReasonNotes, RetinalImageTestingNotes]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Member apprehension
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Normality is Undetermined
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+        RetinalImageTestingNotes:
+          type: string
+          format: string
+          description: Retinal Image Testing Notes
+    ResultsReceived:
+      type: object
+      required: [ ProductCode, EvaluationId, ReceivedDate, IsBillable, Determination, Results ]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date results received
+          example: 2023-11-21T10:02:18.343773+00:00
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: [ "A","N","U" ]
+        Results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SideResultInfo"
+    SideResultInfo:
+      type: object
+      properties:
+        AbnormalIndicator:
+          type: string
+          format: string
+          description: Indicates if test is normal, abnormal or undetermined
+          example: [ "A","N","U" ]
+        Exception:
+          type: string
+          format: string
+          description: Error occured in performance of test
+          example: Result value out of range
+    BillRequestSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, BillingProductCode, BillId]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: DEE
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    BillRequestNotSent:
+      type: object
+      required: [ ProductCode, CreatedDate, ReceivedDate, BillingProductCode, BillId ]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    ProviderPayRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ProviderPayProductCode:
+          type: string
+          format: string
+          description: The provider pay product code for this status event
+          example: DEE
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    ProviderNonPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent, Reason]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+        Reason:
+          type: string
+          format: string
+          description: Reason exam is non payable
+    ProviderPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+    Result:
+      type: object
+      required: [ ProductCode, CreatedDate, ReceivedDate ]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: DEE
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time evaluation was finalized on the provider's iPad
+          example: 2023-11-21T04:05:00.674662+00:00  
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00  
+        IsBillable:
+          type: boolean
+          format: boolean
+          description: Whether or not this is a billable event
+          example: true
+        Determination:
+          type: string
+          format: string
+          description: Normality/Abnormality Indicator
+          example: N  
+        Grader:
+          type: object
+          properties:
+            items:
+              $ref: "#/components/schemas/GraderInfo"
+        DiagnosisCodes:
+          type: array
+          items:
+            type: string
+          description: "A collection of diagnosis codes"
+        Results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SideResultsInfo"
+    GraderInfo:
+      type: object
+      properties:
+        FirstName:
+          type: string
+          description: "The first name of the grader"
+        LastName:
+          type: string
+          description: "The last name of the grader"
+        NPI:
+          type: string
+          description: "Grader's National Provider Identifier"
+        Taxonomy:
+          type: string
+          description: "A taxonomy code that designates the grader's classification and specialization"
+        Results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SideResultsInfo"      
+    SideResultsInfo:
+      type: object
+      properties:
+        Side:
+          type: string
+          description: "Either 'L' or 'R'"
+          example: L
+        Gradable:
+          type: boolean
+          description: "Whether or not there was at least one image for this side (eye) that was gradable"
+          example: true
+        AbnormalIndicator:
+          type: string
+          description: "'N' - Normal, 'A' - Abnormal, 'U' - Undetermined"
+          example: N
+        Pathology:
+          type: boolean
+          description: "Whether or not pathology is present for this side"
+          example: false
+        Findings:
+          type: array
+          items:
+            $ref: "#/components/schemas/SideFinding"
+          description: "Findings for this side (eye)"
+          example: ["Reason One", "Reason Two"]
+        NotGradableReasons:
+          type: array
+          items:
+            type: string
+          description: "Zero or more reasons why image(s) for this side were not gradable"
+          example: [ "Reason One","Reason Two","Reason Three" ]
+    SideFinding:
+      type: object
+      properties:
+        Finding:
+          type: string
+          description: "Name of the finding, such as Diabetic Retinopathy"
+          example: Diabetic Retinopathy
+        Result:
+          type: string
+          description: "Result of the finding, such as None, or Suspected Epiretinal Membrane"
+          example: None
+        AbnormalIndicator:
+          type: string
+          description: "'N' - Normal, 'A' - Abnormal, 'U' - Undetermined'"
+          example: N
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.                

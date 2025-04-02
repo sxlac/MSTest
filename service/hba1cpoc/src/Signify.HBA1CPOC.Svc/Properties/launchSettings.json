@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Signify.HBA1CPOC.Svc": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "Signify.HBA1CPOC.Svc.local": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Local"
+      }
+    }
+  }
+}

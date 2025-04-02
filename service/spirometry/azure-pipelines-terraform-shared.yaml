@@ -1,0 +1,45 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - feature/*
+    - master
+  paths:
+    include:
+      - service/spirometry/tf/shared/*
+    exclude:
+      - service/spirometry/tf/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+parameters:
+- name: destroy
+  displayName: Destroy Infrastructure
+  type: boolean
+  default: false
+- name: environment
+  displayName: Deployment environments
+  type: object
+  default:
+  - PREPROD
+  - PROD
+
+stages:
+- ${{ each env in parameters.environment }}:
+      - template: stagetemplates/terraform.yaml@templates
+        parameters:
+          environment: ${{ env }}
+          destroy: ${{ parameters.destroy }}
+          terraformFolder: 'service/spirometry/tf/shared/'
+          variableGroups:
+          - ${{ if in(env, 'PREPROD') }}:
+            - terraform-okta-preprod
+          - ${{ else }}:
+            - terraform-okta-prod

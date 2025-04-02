@@ -1,0 +1,15 @@
+host_name = "sh-dev-usc-postgresql"
+host_postfix = ".azure.dev.signifyhealth.com"
+user_name = "a1csvc"
+app_name = "Signify.A1c.Svc"
+database_name = "a1c"
+//kafka_servers = ["kafka.dev.signifyhealth.com:31090","kafka.dev.signifyhealth.com:31091","kafka.dev.signifyhealth.com:31092"]
+//kafka_retentionms = 172800000
+//kafka_topic = "evaluation"
+k8s_cluster = "dev-usc-shared-aks"
+k8s_ns = "ancillary"
+okta_url          = "oktapreview.com"
+okta_app_name  = "A1C_Service_DEV"
+asb_namespace = "sh-dev-usc-servicebus"
+asb_resourcegroup = "sh-dev-usc-servicebus-rg"
+asb_rulename = "a1cSvcAccessKey"

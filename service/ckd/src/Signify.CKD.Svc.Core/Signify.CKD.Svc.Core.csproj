@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="Extensions\**" />
+	  <EmbeddedResource Remove="Extensions\**" />
+	  <None Remove="Extensions\**" />
+	</ItemGroup>
+	
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="10.1.1" />
+      <PackageReference Include="LaunchDarkly.ServerSdk" Version="7.0.3" />
+      <PackageReference Include="mediatr" Version="12.1.1" />
+      <PackageReference Include="microsoft.csharp" Version="4.7.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+      <PackageReference Include="Npgsql" Version="5.0.10" />
+      <PackageReference Include="NewRelic.Agent.Api" Version="9.9.0" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+      <PackageReference Include="NServiceBus" Version="7.8.2" />
+      <PackageReference Include="NServiceBus.Extensions.DependencyInjection" Version="1.1.0" />
+      <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.4.0" />
+      <PackageReference Include="NServiceBus.Persistence.Sql" Version="6.2.1" />
+      <PackageReference Include="NServiceBus.Serilog" Version="7.16.0" />
+      <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="2.0.4" />
+      <PackageReference Include="Polly" Version="7.2.4" />
+      <PackageReference Include="Refit" Version="6.3.2" />
+      <PackageReference Include="Signify.AkkaStreams.Kafka" Version="4.2.4" />
+      <PackageReference Include="Signify.AkkaStreams.Postgres" Version="4.2.4" />
+      <PackageReference Include="Signify.Okta.Messages" Version="1.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Signify.CKD.Messages\Signify.CKD.Messages.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>uACR.Database</id>
+    <version>$version$</version>
+	  <authors>Signify Health</authors>
+    <title>uACR Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>uACR Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2022</copyright>
+  </metadata>
+  <files>
+	  <file src="flyway\**\*.*" target="flyway" />
+  </files>
+</package>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Signify.CKD.Database</id>
+    <version>$version$</version>
+	<authors>CKD</authors>
+    <title>Ancillary CKD Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Ancillary CKD Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2021</copyright>
+  </metadata>
+  <files>
+	<file src="flyway\**\*.*" target="tools\flyway" />
+  </files>
+</package>

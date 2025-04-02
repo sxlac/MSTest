@@ -1,0 +1,118 @@
+﻿---------------------------
+| APPLICATION DESCRIPTION |
+---------------------------
+
+This application is intended to be used by a member of the Fulfillment Operations
+team, and accepts two files as input - the first being a Provider Supply Request,
+and the latter being the latest master Provider Ship To list. This program will
+attempt to match all supply requests based on the NPI and supply mailing address
+to a known Ship To Number associated with the same address for the same NPI in the
+master Provider Ship To list. The program will output a tab-delimited .txt file
+which is a copy of the input Provider Supply Request file, with two new columns
+inserted at the beginning - "Ship To Number" and "Mismatch Reason".
+
+When attempting to match a supply mailing address to a Ship To Number in the master
+list, one of a few things may happen:
+
+1) A high-quality match is found
+2) A potential match is found
+3) No match is found
+
+If a high-quality match is found, the Ship To Number will be set and the Mismatch
+Reason will be blank. These do not need manual review.
+
+If a potential match is found, the Ship To Number will be set and the Mismatch
+Reason will be "Potential Match - Please Review". These should be manually
+reviewed against the master Provider Ship To list to confirm the supply mailing
+address is the same as the address in the master list. An example of a potential
+match would be if the address in the master list has an apartment or unit number,
+but the provider failed to specify this in the Address Line 2 when submitting the
+supply request.
+
+If no match is found, the Mismatch Reason will be one of the following:
+
+- "NPI not in Master List": Provider has no Ship To addresses on file.
+- "No Potential Matches by City State Zip": This means that for the given NPI, there
+  were no matches with the same 5-digit zip code, state, and city. Note, on occasion
+  providers may misspell the City in the supply request, so the real address may in
+  fact be on file, but usually this means there truly are no matches in the master
+  list. These could still be manually reviewed before creating a new Ship To Number
+  for the address.
+- "No Match by Address": This means that for the given NPI, there is at least one
+  address in the master list with the same City, State and zip code, but the
+  application's algorithm could not find a potential match. On occasion, this may
+  be due to the provider misspelling part of the address, but usually this means
+  there truly are no matches in the master list. These could still be manually
+  reviewed before creating a new Ship To Number for the address.
+
+--------------------------------------
+| APPLICATION INSTRUCTIONS - WINDOWS |
+--------------------------------------
+
+1) Export the Provider Supply Request file from Excel to a tab-delimited .txt file
+   a) Go to 'File' -> 'Export'
+   b) Click 'Change File Type' and select 'Text (Tab delimited) (*.txt)'
+   c) Click 'Save As', navigate to where this application is located, and save the
+      file with a file name without spaces (naming the file simply 'provider.txt'
+      will make a later step simpler, but you can give it any name you would like)
+2) Export the master Ship To file from Excel to a tab-delimited .txt file
+   a) Go to 'File' -> 'Export'
+   b) Click 'Change File Type' and select 'Text (Tab delimited) (*.txt)'
+   c) Click 'Save As', navigate to where this application is located, and save the
+      file with a file name without spaces (naming the file simply 'provider.txt'
+      will make a later step simpler, but you can give it any name you would like)
+3) Open Powershell and navigate to where this application is located. The easiest
+   way to do this is to right-click on the folder where this application is located,
+   and click 'Open in Terminal'
+4) Run this application from Powershell, and if the files are named differently than
+   suggested above, pass the file names as arguments
+   a) Start typing "DPS" and click Tab. This should auto-populate and look like the
+      following:
+
+      .\DpsOps.ConsoleApplication.exe
+
+   b) If you named the files 'provider.txt' and 'master.txt', simply click 'Enter'.
+      If you named the files differently, follow steps b1-b5 below:
+      b1) Enter a Space
+      b2) Enter the filename for the Supply Request .txt file. Either type the
+          entire filename, including the '.txt' extension at the end, or just start
+          typing the beginning of the filename and click Tab to see if it auto-
+          populates
+      b3) Enter a Space
+      b4) Enter the filename for the master Ship To .txt file. Either type the
+          entire filename, including the '.txt' extension at the end or just start
+          typing the beginning of the filename and click Tab to see if it auto-
+          populates
+      b5) Click 'Enter'
+   c) The Powershell window should now show some output logs from the application
+      which look like the below, which means the application ran successfully:
+
+      Provider Supply Request file: provider.txt
+      Master Ship To file: master.txt
+      File delimiter: [tab]
+      Output file will be: output_2024-02-22_12-06-28.txt
+
+      12000 total NPIs in master file
+      15000 total addresses in master file
+      400 total records in supply request file
+
+      Total processing completed in 98ms
+
+5) Import the output file into a new Excel document
+   a) Open a new blank Excel file
+   b) Click 'Data' at the top, and select 'From Text/CSV' at the top-left
+   c) Navigate to the folder where this application is located
+   d) Select the output file that was created by the application, and click 'Import'.
+      The output file will be in the folder where this application is located, and
+      the filename will have the current timestamp in it, so ensure you select the
+      latest output file if you have run the application more than once. The
+      output file is displayed in the Powershell window, and will look like:
+
+      output_2024-02-22_12-06-28.txt
+
+   e) Verify the Preview pop-up shows the contents correctly. The 'Delimiter'
+      drop-down should show 'Tab'
+   f) Click 'Load'
+6) Review the output file results, reviewing potential matches for errors and to
+   determine which supply request addresses have no address in the master Ship To
+   list which need a new Ship To created at the vendor

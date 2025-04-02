@@ -1,0 +1,33 @@
+@startuml ContextDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title A1C Context Diagram
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_LEFT_RIGHT()
+'LAYOUT_AS_SKETCH()
+
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Performs HRE Assessment", "y")
+System_Ext(Evaluations, "Evaluations")
+System_Ext(Labs, "Labs")
+System_Ext(BillingSystem, "Billing System")
+System_Ext(Inventory, "Inventory System")
+System(A1CProcessManager, "A1C Process Manager")
+
+Rel_R(provider, Evaluations, "Sends evaluations to")
+Rel_Neighbor(Evaluations, A1CProcessManager, "notifies")
+Rel_Down(Labs, A1CProcessManager, "Send lab results to")
+
+Rel_Down(A1CProcessManager, BillingSystem, "Recognize revenue using")
+
+Rel_Neighbor(A1CProcessManager, Inventory, "Decrements lab inventory using")
+
+
+
+
+@enduml

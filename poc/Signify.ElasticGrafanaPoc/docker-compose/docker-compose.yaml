@@ -1,0 +1,36 @@
+version: '3.6'
+
+services:  
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.0
+    volumes:
+      - elasticvolume:/usr/share/elasticsearch/data
+    container_name: elastic
+    ports:
+     - 9200:9200
+     - 9300:9300
+    environment:
+      - ELASTIC_PASSWORD=Welcome1
+      - node.name=es01
+      - cluster.name=docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-oss:9.4.0-beta1
+    ports:
+      - 3000:3000
+    environment:
+      GF_USERS_DEFAULT_THEME: "dark"
+    volumes:
+      - grafana:/var/lib/grafana:rw
+      
+volumes:
+  elasticvolume:
+  grafana:

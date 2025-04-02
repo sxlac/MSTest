@@ -1,0 +1,532 @@
+asyncapi: '2.6.0'
+info:
+  title: HBA1CPOC API
+  version: '1.0.0'
+  description: Events published from HBA1CPOC Process Manager
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  A1CPOC_Status/Performed:
+    description: An event that signals hba1cpoc test was performed
+    subscribe:
+      summary: An event that signals hba1cpoc test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  A1CPOC_Status/NotPerformed:
+    description: An event that signals hba1cpoc test was not performed
+    subscribe:
+      summary: An event that signals hba1cpoc test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  A1CPOC_Status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  A1CPOC_Results/ResultsReceived:
+    description: An event containing the hba1cpoc exam test results
+    subscribe:
+      summary: An event containing the hba1cpoc exam test results
+      message:
+        $ref: '#/components/messages/ResultsReceived'    
+  A1CPOC_performed/A1CPOCPerformed:
+    description: An event that signals hba1cpoc was Performed
+    subscribe:
+      summary: An event that signals hba1cpoc was Performed
+      message:
+        $ref: '#/components/messages/A1CPOCPerformed'
+  A1CPOC_Status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  A1CPOC_Status/ProviderNonPayableEventReceived:
+    description: An event signalling that the exam does not satisfy provider payable criteria
+    subscribe:
+      summary: An event signalling that the exam does not satisfy provider payable criteria
+      message:
+        $ref: '#/components/messages/ProviderNonPayableEventReceived'
+  A1CPOC_Status/ProviderPayableEventReceived:
+    description: An event signalling that the exam does satisfy provider payable criteria
+    subscribe:
+      summary: An event signalling that the exam does satisfy provider payable criteria
+      message:
+        $ref: '#/components/messages/ProviderPayableEventReceived'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: HBA1CPOC test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: HBA1CPOC test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    ResultsReceived:
+      name: ResultsReceived
+      title: ResultsReceived
+      summary: Results received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ResultsReceived"
+    A1CPOCPerformed:
+      name: Performed
+      title: Performed
+      summary: hba1cpoc test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/A1CPOCPerformed"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    ProviderNonPayableEventReceived:
+      name: ProviderNonPayableEventReceived
+      title: ProviderNonPayableEventReceived
+      summary: ProviderNonPayable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderNonPayableEventReceived"
+    ProviderPayableEventReceived:
+      name: ProviderPayableEventReceived
+      title: ProviderPayableEventReceived
+      summary: ProviderPayable event received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayableEventReceived"
+  schemas:
+    Performed:
+      type: object
+      required: [EvaluationId, MemberPlanId, ProductCode, CreatedDate, ReceivedDate]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: HBA1CPOC
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+    NotPerformed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ReasonType, Reason, ReasonNotes]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: HBA1CPOC
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Member apprehension
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Normality is Undetermined
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+    ResultsReceived:
+      type: object
+      required: [ ProductCode, EvaluationId, ReceivedDate, IsBillable, Determination, Results ]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: HBA1CPOC
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date results received
+          example: 2023-11-21T10:02:18.343773+00:00
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: [ "A","N","U" ]
+        Results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SideResultInfo"
+    SideResultInfo:
+      type: object
+      properties:
+        AbnormalIndicator:
+          type: string
+          format: string
+          description: Indicates if test is normal, abnormal or undetermined
+          example: [ "A","N","U" ]
+        Exception:
+          type: string
+          format: string
+          description: Error occured in performance of test
+          example: Result value out of range
+    BillRequestSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, BillingProductCode, BillId]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: HBA1CPOC
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: HBA1CPOC
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    A1CPOCPerformed:
+      type: object
+      required: [ ProductCode, CreatedDate, ReceivedDate ]
+      properties:
+        CorrelationId:
+          type: string
+          format: guid
+          description: Identifier of this event
+          example: "F9A3F9C9-BCBA-40A7-A371-21FDEB20CCC2"
+        HBA1CPOCId:
+          type: integer
+          format: int
+          description: Identifier of this evaluation
+          example: 293847
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        MemberId:
+          type: integer
+          format: long
+          description: ID of the member for this test
+          example: 174209
+        AppointmentId:
+          type: integer
+          format: long
+          description: ID of the appointment for this test
+          example: 315498 
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        DateOfService:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-12-25T07:30:00.674662+00:00
+        CreatedDateTime:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDateTime:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ClientId:
+          type: integer
+          format: int
+          description: ID of the client for this test
+          example: 46813
+        UserName:
+          type: string
+          format: string
+          description: User name for this test
+          example: dpsUserName
+        ApplicationId:
+          type: string
+          format: string
+          description: ID of the application for this test
+          example: dpsApplication
+        ExpirationDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date for the expiration of the test
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderPayRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: HBA1CPOC
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ProviderPayProductCode:
+          type: string
+          format: string
+          description: The provider pay product code for this status event
+          example: HBA1CPOC
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    ProviderNonPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent, Reason]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+        Reason:
+          type: string
+          format: string
+          description: Reason exam is non payable
+    ProviderPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.                

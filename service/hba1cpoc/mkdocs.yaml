@@ -1,0 +1,3 @@
+site_name: "HBA1CPOC Process Manager"
+plugins:
+  - techdocs-core

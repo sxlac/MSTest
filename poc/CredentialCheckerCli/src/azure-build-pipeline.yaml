@@ -1,0 +1,68 @@
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - master
+      - feature/*
+  paths:
+    include:
+      - poc/CredentialCheckerCli/*
+    exclude:
+      - ReadMe.md
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+variables:
+  - group: azuredevops
+  - name: AppName
+    value: 'CredentialCheckerCli'
+  - name: RootFolder
+    value: 'src'
+  - name: SOURCE_BRANCH_NAME
+    value: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
+  - name: currentDate
+    value: $[ format('{0:yyyy}.{0:MM}.{0:dd}', pipeline.startTime) ]
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Set SDK version'
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build'
+    inputs:
+      command: 'build'
+      arguments: '--configuration release'
+      projects: '$(Build.SourcesDirectory)/poc/CredentialCheckerCli/src/CredentialCheckerCli/$(AppName).csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'publish'
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: '$(Build.SourcesDirectory)/poc/CredentialCheckerCli/src/CredentialCheckerCli/$(AppName).csproj'
+      arguments: '--output $(Build.ArtifactStagingDirectory)/build'
+      zipAfterPublish: true
+      # modifyOutputPath: true
+
+  - task: UniversalPackages@0
+    displayName: 'Deploy Package'
+    inputs:
+      command: 'publish'
+      publishDirectory: '$(Build.ArtifactStagingDirectory)/build'
+      feedsToUsePublish: 'internal'
+      vstsFeedPublish: '97f88eba-ecb2-484b-ae7c-c2d43a008cea/5c3f381e-03fa-40b7-a96c-fea312dbc613'
+      vstsFeedPackagePublish: 'credentialcheckercli'
+      versionOption: 'patch'
+      packagePublishDescription: 'Deployed from pipeline'
+#    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  

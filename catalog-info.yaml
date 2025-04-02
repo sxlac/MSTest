@@ -1,0 +1,60 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: dps
+  description: Diagnostics and Preventive Services system
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - ancillary
+    - dps
+    - labrats
+spec:
+  owner: group:dps
+  domain: dps-domain
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: signify-dps-launchdarkly
+  links: [
+    {
+      url: "https://app.launchdarkly.com/dps/production/features",
+      title: "production lauchdarkley client",
+      type: "production"
+    },
+    {
+      url: "https://app.launchdarkly.com/dps/uat/features",
+      title: "uat lauchdarkley client",
+      type: "uat"
+    },
+    {
+      url: "https://app.launchdarkly.com/dps/qa/features",
+      title: "qa lauchdarkley client",
+      type: "qa"
+    },
+    {
+      url: "https://app.launchdarkly.com/dps/dev/features",
+      title: "dev lauchdarkley client",
+      type: "dev"
+    }
+  ]
+  tags:
+    - launchdarkly
+    - dps
+    - labrats
+    - dpsi
+spec:
+  type: website
+  owner: group:dps
+  system: dps
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: dps-domain
+  title:  DPS Domain  
+  links: []
+  tags: []
+spec:
+  owner: group:dps

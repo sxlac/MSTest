@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <TargetFramework>net8.0</TargetFramework>
+        <Authors>DPSI QE</Authors>
+        <Copyright>Signify Health</Copyright>
+        <Configurations>Debug;Release;Test</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Faker.Net" Version="2.0.154" />
+        <PackageReference Include="Iris.Public.Grading" Version="1.0.9" />
+        <PackageReference Include="NServiceBus" Version="8.1.6" />
+        <PackageReference Include="Signify.QE.MemberApi.WebApi.Library" Version="1.5.1295" /> <!-- Added to avoid version conflict with Signify.EvaluationsApi.Core -->
+        <PackageReference Include="Signify.QE.MSTest" Version="1.2.1" />
+        <PackageReference Include="Iris.Public.Types" Version="1.3.12" />
+        <PackageReference Include="Signify.QE.Core.Authentication" Version="3.0.0" />
+        <PackageReference Include="Signify.Dps.Test.Utilities" Version="4.6.0" />
+        <PackageReference Include="Signify.QE.Core.Utilities" Version="2.0.0" />
+        <PackageReference Include="FluentAssertions" Version="6.12.0" />
+        <PackageReference Include="Refit" Version="8.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.DEE.Svc.Core\Signify.DEE.Svc.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.coverage.exclusions">
+            <Value>**/*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Exceptions\" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,30 @@
+@startuml ContextDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title HBA1CPOC Context Diagram
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_LEFT_RIGHT()
+'LAYOUT_AS_SKETCH()
+
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Provider that performs HRE assessment", "y")
+System_Ext(Evaluations, "Evaluations","System that stores evaluation data")
+System_Ext(BillingSystem, "Billing System","System that handles RCM billing")
+System_Ext(Inventory, "Inventory System","System that updated Inventory")
+System_Ext(providerpay, "Provider Pay System", "System that handles payments to providers")
+System(HBA1CPOCProcessManager, "HBA1CPOC Process Manager","Processes events corresponding to hemoglobin A1c testing")
+
+Rel_R(provider, Evaluations, "Sends completed evaluation data")
+Rel_U(Evaluations, HBA1CPOCProcessManager, "Notifies evaluation is finalized")
+Rel_U(HBA1CPOCProcessManager,Evaluations, "Retrieves data from evaluation")
+Rel_D(HBA1CPOCProcessManager, BillingSystem, "Sends billing request")
+Rel_D(HBA1CPOCProcessManager, Inventory, "Decrements lab inventory")
+Rel_D(HBA1CPOCProcessManager, providerpay, "Sends provider payment requests")
+
+
+@enduml

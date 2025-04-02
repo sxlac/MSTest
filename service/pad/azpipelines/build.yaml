@@ -1,0 +1,73 @@
+trigger:
+  batch: "true"
+  paths:
+    include:
+      - service/pad/*
+    exclude:
+      - service/pad/docs/*
+      - service/pad/flyway/*
+      - service/pad/tf/*
+      - service/pad/catalog-info.yaml
+      - service/pad/mkdocs.yaml
+      - service/pad/readme.md
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+variables:
+  - group: azuredevops
+  - group: dps-shared-all
+  - name: RootFolder
+    value: 'service'
+  - name: appName
+    value: 'pad'
+  - name: Sln
+    value: 'Signify.PAD.Svc.sln'
+  - name: projectName
+    value: 'signify-pad-svc'
+
+stages:
+  - template: stagetemplates/dotnet-docker.yaml@templates
+    parameters:
+      coreVersion: 8.0.x
+      gitVersionFile: $(RootFolder)/$(appName)/GitVersion.yml
+      dockerComposeFile: $(RootFolder)/$(appName)/docker-compose.yaml
+      dockerComposeService: signify-pad-svc
+      kubernetesManifest: $(RootFolder)/$(appName)/k8s/deployment.yaml
+      solutionPath: $(RootFolder)/$(appName)/src/$(Sln)
+      projectName: $(projectName)
+      dotNetTestArguments: --filter FullyQualifiedName!~Signify.PAD.Svc.System.Tests
+      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
+          push: false
+      dockerCustomSteps:
+      # Adds a build tag from the full commit SHA of this build.
+      #
+      # This can be used to reference the precise build during deployment by
+      # other pipelines.
+      - task: Bash@3
+        displayName: 'Tag build'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[build.addbuildtag]$(Build.SourceVersion)"
+      
+  # TODO: 2023/11/22 - SRE's working on snyk integration to templates. 
+  # TODO: SRE-4917 - Create Snyk templates
+  # - stage: 'SecurityScan'
+  #   variables:
+  #     - group: DPS-Snyk
+  #   jobs:
+  #   - job: SnykSecurityScan
+  #     steps:
+  #     - task: SnykSecurityScan@1
+  #       inputs:
+  #         serviceConnectionEndpoint: 'Snyk DPS'
+  #         testType: app
+  #         testDirectory: $(rootFolder)/$(appName)/src/$(Sln)
+  #         monitorWhen: always
+  #         failOnIssues: false
+  #         organization: $(SnykOrgId)
+  #         projectName: Signify.PAD.Svc

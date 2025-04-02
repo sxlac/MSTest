@@ -1,0 +1,11 @@
+#Only triggered manually
+trigger: none
+
+variables:
+  - group: ancillary-qe-pipeline-uat
+  - name: service
+    value: HBA1CPOC
+  - name: tag
+    value: hba1cpoc
+jobs:
+- template: /azpipelines/templates/jobtemplates/test-automation-template.yaml

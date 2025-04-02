@@ -1,0 +1,47 @@
+# Docker
+# Build a Docker image 
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - master
+      - feature/*
+      - release/*
+  tags:
+    include:
+      - release/*
+  paths:
+    include:
+      - service/a1c/flyway/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates 
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+variables:
+  - group: azuredevops
+  - name: appName
+    value: 'a1c'
+  - name: rootFolder
+    value: 'service'
+  - name: vmImageName
+    value: 'prod-linux-build'
+  - name: DOTNET_CLI_HOME
+    value: /tmp
+
+stages:
+- stage: 'buildCI' 
+  jobs:
+  - job: BuildAndTestCI
+    steps:
+    - template: steptemplates/ST_flywaydb.yaml@templates  # Template reference
+      parameters:
+        workingdir: '$(rootFolder)/$(appName)' 
+        flywayfolder: 'flyway'

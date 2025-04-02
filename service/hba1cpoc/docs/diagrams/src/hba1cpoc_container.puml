@@ -1,0 +1,57 @@
+@startuml ContainerDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Container.puml
+
+title HBA1CPOC Process Manager Container Diagram
+
+skinparam defaultFontSize 10
+
+'LAYOUT_LEFT_RIGHT()
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Provider that performs HRE assessment")
+
+System_Boundary(c2, "HBA1CPOC Process Manager System"){
+
+    Container(HBA1CPOCProcessManager, "HBA1CPOC Process Manager", ".Net Core", "Orchestrates HBA1CPOC workflow")
+    ContainerDb(HBA1CPOCDb, "HBA1CPOC", "Postgres", "Stores HBA1CPOC exam data.")
+    Rel(HBA1CPOCProcessManager, HBA1CPOCDb, "Read & write to", "Postgres/5432")
+
+}
+
+Container(inventory, "InventoryApi", "Aspnet API")
+Rel_L(HBA1CPOCProcessManager, inventory, "make API call to", "JSON/HTTPS")
+ContainerDb(inventorytopic, "Inventory", "Kafka", "Stores Inventory events")
+Rel_L(inventory, inventorytopic, "Store event", "JSON/Kafka")
+Rel_L(HBA1CPOCProcessManager, inventorytopic, "Reads message from topic", "JSON/Kafka")
+
+Container(evaluation, "EvaluationApi", "Aspnet API")
+Rel_D(HBA1CPOCProcessManager, evaluation, "make API call to", "JSON/HTTPS")
+Container(provider, "ProviderApi", "Aspnet API")
+Rel_D(HBA1CPOCProcessManager, provider, "make API call to", "JSON/HTTPS")
+Container(member, "MemberApi", "Aspnet API")
+Rel_D(HBA1CPOCProcessManager, member, "make API call to", "JSON/HTTPS")
+Container(rcm, "RCMApi", "Aspnet API")
+Rel_D(HBA1CPOCProcessManager, rcm, "make API call to", "JSON/HTTPS")
+Container(providerpay, "ProviderPayApi", "Aspnet API")
+Rel_D(HBA1CPOCProcessManager, providerpay, "make API call to", "JSON/HTTPS")
+
+ContainerDb(evaltopic, "Evaluation", "Kafka", "Stores Evaluation events")
+Rel(evaltopic, HBA1CPOCProcessManager, "Reads messages from topic", "JSON/Kafka")
+ContainerDb(pfddeliverytopic, "PDF Delivery", "Kafka", "Stores PDF Delivery events")
+Rel(pfddeliverytopic, HBA1CPOCProcessManager, "Reads messages from topic", "JSON/Kafka")
+ContainerDb(cdieventtopic, "CDI Passed/Failed", "Kafka", "Stores CDI events")
+Rel(cdieventtopic, HBA1CPOCProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+ContainerDb(rcmbillrequesttopic, "RCM Bill Request", "Kafka", "Sends RCM Bill Request Messages")
+Rel_R(HBA1CPOCProcessManager, rcmbillrequesttopic, "Sends messages to topic", "JSON/Kafka")
+ContainerDb(hba1cstatustopic, "Sends status messages Performed/NotPerformed/Results Recieved/BillRequestSent/BillRequestNotSent", "Kafka", "Stores HBA1CPOC Status Messages")
+Rel_R(HBA1CPOCProcessManager, hba1cstatustopic, "Sends messages to topic", "JSON/Kafka")
+ContainerDb(providerpayrequesttopic, "Provider Pay Request", "Kafka", "Stores Provider Pay Request Messages")
+Rel_R(HBA1CPOCProcessManager, providerpayrequesttopic, "Sends messages to topic", "JSON/Kafka")
+ContainerDb(resultsreceivedtopic, "Result Received", "Kafka", "Stores Results Received Messages")
+Rel_R(padprocessmanager, resultsreceivedtopic, "Sends messages to topic", "JSON/Kafka")
+
+'Lay_R(inventory, inventorytopic)
+
+@enduml

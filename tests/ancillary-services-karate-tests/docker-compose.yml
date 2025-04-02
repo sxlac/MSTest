@@ -1,0 +1,16 @@
+#This docker configuration is used to run the tests in ADO as well as locally.
+#In case the appconfig.json file is absent the credentials can be passed with -e flag via cli when running tests locally
+#Or the credentials can be set as environment variables in the environment section of this file
+version: '3.8'
+services: 
+  ancillary-karate-tests:
+    image: ancillary-karate-tests
+    build:
+      context: .
+    volumes:
+      - ./target:/usr/src/app/target
+      - m2cache:/root/.m2
+    working_dir: /usr/src/app
+ 
+volumes:
+  m2cache:

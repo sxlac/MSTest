@@ -1,0 +1,412 @@
+﻿{
+  "ProviderPay": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PaymentId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "FOBTBarcodeHistory": [
+    {
+      "columnName": "FOBTBarcodeHistoryId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Barcode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "OrderCorrelationId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    }
+  ],
+  "FOBTBilling": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "BillId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "BillingProductCode",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "AcceptedAt",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Accepted",
+      "isNullable": "YES",
+      "dataType": "bool"
+    }
+  ],
+  "FOBTNotPerformed": [
+    {
+      "columnName": "FOBTNotPerformedId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Notes",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    }
+  ],
+  "FOBTStatus": [
+    {
+      "columnName": "FOBTStatusId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTStatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "FOBTStatus": [
+    {
+      "columnName": "FOBTStatusId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTStatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "NotPerformedReason": [
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "AnswerId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Reason",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "LabResults": [
+    {
+      "columnName": "LabResultId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "OrderCorrelationId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Barcode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LabResult",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ProductCode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AbnormalIndicator",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Exception",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "CollectionDate",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ServiceDate",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReleaseDate",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "PDFToClient": [
+    {
+      "columnName": "PDFDeliverId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EventId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "DeliveryDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "DeliveryCreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "BatchId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "BatchName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "FOBT": [
+    {
+      "columnName": "FOBTId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MemberPlanId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MemberId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CenseoId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AppointmentId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ProviderId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DateOfService",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReceivedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamp"
+    },
+    {
+      "columnName": "Barcode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ClientId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "UserName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ApplicationId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "FirstName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "MiddleName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LastName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "DateOfBirth",
+      "isNullable": "YES",
+      "dataType": "timestamp"
+    },
+    {
+      "columnName": "AddressLineOne",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AddressLineTwo",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "City",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "State",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ZipCode",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NationalProviderIdentifier",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "OrderCorrelationId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    }
+  ]
+}

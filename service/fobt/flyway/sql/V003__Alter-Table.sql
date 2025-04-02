@@ -1,0 +1,2 @@
+ALTER TABLE  public."FOBT"
+ADD COLUMN IF NOT EXISTS "OrderCorrelationId" UUID NULL;

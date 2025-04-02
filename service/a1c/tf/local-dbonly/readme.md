@@ -1,0 +1,5 @@
+When running a "local" terraform with the local.tfvars, the intention is that you can create your own personal Postgres instance not one on Azure.   if you don't also have a local Kafka or k8s cluster you can temporarily rename those files with a different extension to skip them when using local.tfvars so that you can create your local database.    
+
+Note that since there is no actual 'local' Okta -- only preproduction & prod, the local Okta testing just creates groups that are configured for use running from localhost. 
+
+You will always want to keep the terraform state for 'local' local and not on the remote since other devs on your team may also need to run a local terraform for their own personal dbs. But, this means that once one person runs the Okta script against "local" no one else can do so as the artifacts will already exist but their own terraform state won't know that it does, and the script will fail.  Thus, it is recommended that at most one person run the Okta.tf script against the local varfile.

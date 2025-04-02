@@ -1,0 +1,124 @@
+parameters:
+  - name: variableGroup
+    type: string 
+    default: ancillary-qe-pipeline-prod
+  - name: dco_environment_variables
+    type: string
+    default: "-e OKTA_USERNAME=$(OKTA_USERNAME) 
+    -e OKTA_PASSWORD=$(OKTA_PASSWORD) 
+    -e HBA1CPOC_DB_USERNAME=$(HBA1CPOC_DB_USERNAME) 
+    -e HBA1CPOC_DB_PASSWORD=$(HBA1CPOC_DB_PASSWORD) 
+    -e HBA1CPOC_DB_URL=$(HBA1CPOC_DB_URL)
+    -e OKTA_CLIENT_ID=$(OKTA_CLIENT_ID)
+    -e ZEPHYR_API_TOKEN=$(ZEPHYR_API_TOKEN)
+    -e ZEPHYR_API_URL=$(ZEPHYR_API_URL)
+    -e CREATE_TEST_CYCLE=$(CREATE_TEST_CYCLE)
+    -e ZEPHYR_DESCRIPTION='$(Build.SourceVersionMessage)'
+    -e COMMIT_ID=$(Build.SourceVersion)
+    -e ANCILLARY_SERVICE='HBA1CPOC'"
+  - name: dco_file_location
+    type: string
+    default: "tests/ancillary-services-karate-tests"
+  - name: karate_env
+    type: string
+    default: prod
+
+jobs:
+- job: Integration_Tests
+  displayName: ancillary.hba1cpoc.service.tests
+  pool:
+    name: uat-linux-test
+  steps:
+  - checkout: self
+    clean: true
+
+  - task: Docker@2
+    displayName: Docker Login
+    inputs:
+      containerRegistry: signifyhealthdev
+      command: login
+
+  - task: Bash@3
+    displayName: Initial cleanup for containers
+    inputs:
+      targetType: inline
+      script: >-
+        docker compose -f docker-compose.yml down --remove-orphans
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Spin up Docker and run Karate tests
+    inputs:
+      targetType: inline
+      script: |
+        docker compose up --build -d
+        docker compose run ${{ parameters.dco_environment_variables }} ancillary-karate-tests mvn test -Dkarate.env="${{ parameters.karate_env }}" "-Dkarate.options=--tags @smoke-hba1cpoc"
+        echo "Reading zephyr.txt to extract TestCycleKey and TestCycleId."
+        keyId=`cat target/zephyr.txt`
+        arrKeyId=(${keyId//,/ })
+        tc_key=${arrKeyId[0]} 
+        tc_id=${arrKeyId[1]}
+        echo "TestCycleKey read from file : ${tc_key}"
+        echo "TestCycleId read from file : ${tc_id}" 
+        echo "##vso[task.setvariable variable=testCycleKey;isoutput=true]${tc_key}"
+        echo "##vso[task.setvariable variable=testCycleId;isoutput=true]${tc_id}"
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+    name: RunKarateTests
+
+  - task: Bash@3
+    displayName: Docker Logs
+    condition: succeededOrFailed()
+    inputs:
+      targetType: inline
+      script: docker compose -f docker-compose.yml logs
+      workingDirectory: $(System.DefaultWorkingDirectory)//${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Down the containers after running tests
+    condition: always()
+    inputs:
+      targetType: inline
+      script: >-
+        docker compose -f docker-compose.yml down --remove-orphans
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/karate-reports/**.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: $(Build.DefinitionName) Results
+
+  - task: CopyFiles@2
+    displayName: Copy JUnit XML Files to Artifact Staging
+    condition: succeededOrFailed()
+    inputs:
+      SourceFolder: $(System.DefaultWorkingDirectory)
+      Contents: '**/karate-reports/**.xml'
+      TargetFolder: $(build.artifactstagingdirectory)
+      preserveTimestamp: true
+      
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Test Results Artifact
+    condition: succeededOrFailed()
+    inputs:
+      ArtifactName: $(Build.DefinitionName)-junit-reports
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Karate Test Html Reports
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/target/karate-reports
+      artifact: KarateHTMLReport_$(System.JobId)
+      publishLocation: 'pipeline'
+
+  # - task: PublishPipelineArtifact@1
+  #   displayName: Publish Zephyr Zip file
+  #   condition: succeededOrFailed()
+  #   inputs:
+  #     targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/src/test/java/helpers/zephyr/zephyr.zip
+  #     artifact: ZephyrZip_$(System.JobId)
+  #     publishLocation: 'pipeline'
+...

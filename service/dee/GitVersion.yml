@@ -1,0 +1,23 @@
+mode: Mainline
+branches:
+  master:
+      regex: ^master$
+      mode: ContinuousDeployment
+      tag: ''
+      increment: Patch
+  feature:
+      regex: ^feature\/
+      mode: ContinuousDeployment
+      tag: '{BranchName}'
+      increment: Patch
+      source-branches:
+        - master
+  release:
+      regex: ^release\/
+      mode: ContinuousDeployment
+      tag: ''
+      increment: Patch
+      source-branches:
+        - master
+ignore:
+  sha: []

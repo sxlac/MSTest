@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.6" />
+        <PackageReference Include="NServiceBus" Version="9.2.3" />
+        <PackageReference Include="NServiceBus.Extensions.DependencyInjection" Version="2.0.0" />
+        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="3.0.0" />
+        <PackageReference Include="NServiceBus.Persistence.Sql" Version="7.0.5" />
+        <PackageReference Include="NServiceBus.RabbitMQ" Version="8.0.3" />
+        <PackageReference Include="NServiceBus.Serilog" Version="11.2.2" />
+        <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="3.2.2" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="7.0.0" />
+        <PackageReference Include="Signify.AkkaStreams.Kafka.DependencyInjection" Version="4.2.5" />
+        <PackageReference Include="Signify.GenericHost.Diagnostics.HealthChecks.DependencyInjection" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.FOBT.Svc.Core\Signify.FOBT.Svc.Core.csproj" />
+    </ItemGroup>
+
+</Project>

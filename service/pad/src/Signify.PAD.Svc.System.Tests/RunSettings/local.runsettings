@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <TestRunParameters>
+		<Parameter name="env" value="local" />
+        <Parameter name="AppointmentApiUrl" value="https://localhost:7118" />
+        <Parameter name="CapacityApiUrl" value="https://localhost:7118/capacity" />
+        <Parameter name="CdiApiUrl" value="https://localhost:7118/api" />
+        <Parameter name="CodingApiUrl" value="https://localhost:7118/api" />
+        <Parameter name="EvaluationApiUrl" value="https://localhost:7118/evaluation" />
+        <Parameter name="MemberApiUrl" value="https://localhost:7118/member" />
+        <Parameter name="AvailabilityApiUrl" value="https://localhost:7118/availability" />
+        <Parameter name="ProviderApiUrl" value="https://localhost:7118/provider" />
+        <Parameter name="ProductApiUrl" value="https://localhost:7118/product" />
+        <Parameter name="ProviderPayApiUrl" value="https://localhost:7118/providerpay/v1" />
+        <Parameter name="SchedulingApiUrl" value="https://localhost:7118/scheduling" />
+        <Parameter name="LabResultApi.Url" value="https://localhost:7118/api" />
+    </TestRunParameters>
+    <MSTest>
+        <Parallelize>
+            <Workers>10</Workers>
+            <Scope>MethodLevel</Scope>
+        </Parallelize>
+    </MSTest>
+    <LoggerRunSettings>
+        <Loggers>
+          <Logger friendlyName="console" enabled="True">
+            <Configuration>
+                <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="trx" enabled="True">
+            <Configuration>
+              <LogFileName>TestResults.trx</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="junit" enabled="True">
+            <Configuration>
+              <LogFileName>TestResultsJunit.xml</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="xunit" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsXunit.xml</LogFileName>
+                <Verbosity>detailed</Verbosity>
+              </Configuration>
+          </Logger>
+          <Logger friendlyName="html" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsHtml.html</LogFileName>
+              </Configuration>
+          </Logger>
+        </Loggers>
+    </LoggerRunSettings>
+</RunSettings>

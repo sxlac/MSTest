@@ -1,0 +1,79 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: signify-spirometry-svc
+  description: Spirometry process manager
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+#    dev.azure.com/project-repo: HCC/ancillary # Leaving out for now until this is moved out of a mono-repo, as to avoid noise from the other process managers being displayed
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - dpsi
+    - spirometry
+    - tier3
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51218696/Spirometry+Process+Manager
+      title: Spirometry Process Manager
+spec:
+  type: service
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  dependsOn:
+    - resource:spirometry-db
+  providesApis:
+    - spirometry-kafka-events
+  consumesApis: # These must match exactly as they are named in their API in Backstage for Backstage to properly link them
+    - appointment-api
+    - cdi-api
+    - evaluation
+    - member
+    - oauth
+    - okta
+    # - pdfdelivery # this is missing here because it's not configured in backstage. This is where it comes from: https://dev.azure.com/signifyhealth/HCC/_git/coreservices?version=GBmaster&_a=contents&path=/onprem/signify.cap.kafkapublisher. Should be added when available.
+    - provider
+    - providerpay
+    - rcm
+    # - spirometry-overread # this is missing here because it's not defined in the labs repo (produced by Labs Home Access)
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: spirometry-db
+  description: Database for the Spirometry process manager
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - postgres
+    - spirometry-db
+spec:
+  type: database
+  lifecycle: production
+  owner: group:dps
+  system: dps
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: spirometry-kafka-events
+  description: Spirometry Kafka Events API
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - kafka
+    - json
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219165/Lab+Status+Contracts
+      title: Spirometry Status Contract
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219279/Lab+Result+Contracts
+      title: Spirometry Result Contract
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  definition:
+    $text: https://dev.azure.com/signifyhealth/HCC/_git/ancillary?path=/service/spirometry/docs/asyncapi.yaml

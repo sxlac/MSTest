@@ -1,0 +1,1 @@
+INSERT INTO "FOBTStatusCode" ("FOBTStatusCodeId", "StatusCode")  VALUES  (14,'BillRequestNotSent') ON CONFLICT DO NOTHING;

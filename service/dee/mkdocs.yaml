@@ -1,0 +1,3 @@
+site_name: "DEE Process Manager"
+plugins:
+  - techdocs-core

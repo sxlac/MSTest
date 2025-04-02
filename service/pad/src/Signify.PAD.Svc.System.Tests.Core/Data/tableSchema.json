@@ -1,0 +1,381 @@
+{
+  "PAD": [
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MemberPlanId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MemberId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CenseoId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AppointmentId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ProviderId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DateOfService",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReceivedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ClientId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "UserName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ApplicationId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "FirstName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "MiddleName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LastName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "DateOfBirth",
+      "isNullable": "YES",
+      "dataType": "timestamp"
+    },
+    {
+      "columnName": "AddressLineOne",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AddressLineTwo",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "City",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "State",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ZipCode",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NationalProviderIdentifier",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LeftScoreAnswerValue",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LeftSeverityAnswerValue",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "RightScoreAnswerValue",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "RightSeverityAnswerValue",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LeftNormalityIndicator",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "RightNormalityIndicator",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ProcessDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "NotPerformed": [
+    {
+      "columnName": "NotPerformedId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "AnswerId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },{
+      "columnName": "Notes",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    }
+  ],
+  "PADRCMBilling": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "BillId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Accepted",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "AcceptedAt",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "PADStatus": [
+    {
+      "columnName": "PADStatusId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PADStatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "PADStatusCode": [
+    {
+      "columnName": "PADStatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "StatusCode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "PDFToClient": [
+    {
+      "columnName": "PDFDeliverId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EventId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "DeliveryDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "DeliveryCreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "BatchId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "BatchName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "ProviderPay": [
+    {
+      "columnName": "ProviderPayId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PaymentId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "PADId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "SeverityLookup": [
+    {
+      "columnName": "SeverityLookupId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MinScore",
+      "isNullable": "YES",
+      "dataType": "numeric"
+    },
+    {
+      "columnName": "MaxScore",
+      "isNullable": "YES",
+      "dataType": "numeric"
+    },
+    {
+      "columnName": "Severity",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NormalityIndicator",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "WaveformDocument": [
+    {
+      "columnName": "WaveformDocumentId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "WaveformDocumentVendorId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Filename",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "MemberPlanId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "DateOfExam",
+      "isNullable": "NO",
+      "dataType": "date"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "WaveformDocumentVendor": [
+    {
+      "columnName": "WaveformDocumentVendorId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "VendorName",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ]
+}

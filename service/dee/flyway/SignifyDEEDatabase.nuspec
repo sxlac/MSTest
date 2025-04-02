@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Signify.DEE.Database</id>
+    <version>1.0.0</version>
+	  <authors>Signify Health</authors>
+    <title>DEE Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Signify DEE Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2021</copyright>
+  </metadata>
+  <files>
+	  <file src="flyway\**\*.*" target="flyway" />
+  </files>
+</package>

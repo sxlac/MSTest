@@ -1,0 +1,2 @@
+ALTER TABLE public."Exam"
+    ADD COLUMN IF NOT EXISTS "HasEnucleation" BOOLEAN DEFAULT NULL;

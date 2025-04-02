@@ -1,0 +1,57 @@
+@startuml ContainerDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Container.puml
+
+title A1C Process Manager Container Diagram
+
+skinparam defaultFontSize 10
+
+'LAYOUT_LEFT_RIGHT()
+
+LAYOUT_WITH_LEGEND()
+
+
+System_Boundary(c2, "A1C Process"){
+
+    Container(A1CProcessManager, "A1C Process Manager", ".Net Core", "Orchestrates A1C workflow")
+
+    ContainerDb(A1CDb, "A1C", "Postgres", "Stores Evaluations that have A1C and their workflow status.")
+
+    Rel(A1CProcessManager, A1CDb, "Read & write to", "Postgres/5432")
+
+}
+
+Container(inventory, "InventoryApi", "Aspnet API")
+Rel_R(A1CProcessManager, inventory, "make API call to", "JSON/HTTPS")
+
+ContainerDb(inventorytopic, "Inventory", "Kafka", "Stores Inventory events")
+Rel_L(inventory, inventorytopic, "Store event", "JSON/Kafka")
+Rel_L(A1CProcessManager, inventorytopic, "Reads message from topic", "JSON/Kafka")
+
+Container(evaluation, "EvaluationApi", "Aspnet API")
+Rel_R(A1CProcessManager, evaluation, "make API call to", "JSON/HTTPS")
+
+Container(provider, "ProviderApi", "Aspnet API")
+Rel_R(A1CProcessManager, provider, "make API call to", "JSON/HTTPS")
+
+Container(member, "MemberApi", "Aspnet API")
+Rel_R(A1CProcessManager, member, "make API call to", "JSON/HTTPS")
+
+Container(rcm, "RCMApi", "Aspnet API")
+Rel_R(A1CProcessManager, rcm, "make API call to", "JSON/HTTPS")
+
+Container(labs, "LabsApi", "Aspnet API")
+Rel(A1CProcessManager, labs, "make API call to", "JSON/HTTPS")
+
+ContainerDb(evaltopic, "Evaluation", "Kafka", "Stores Evaluation messages")
+Rel(evaltopic, A1CProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+ContainerDb(labstopic, "Labs", "Kafka", "Stores lab result messages")
+Rel_D(labs, labstopic, "Store event", "JSON/Kafka")
+Rel_D(labstopic, A1CProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+ContainerDb(pfddelivery, "PDF Delivery", "Kafka", "Stores PDF Delivery messages")
+Rel(pfddelivery, A1CProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+'Lay_R(inventory, inventorytopic)
+
+@enduml

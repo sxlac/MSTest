@@ -1,0 +1,46 @@
+parameters:
+  - name: envVars
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: OKTA_CLIENT_ID
+        value: $(OKTA_CLIENT_ID)
+#      - name: KAFKA_PASSWORD
+#        value: $(ConfluentCloudPassword)
+#      - name: KAFKA_USERNAME
+#        value: $(ConfluentCloudUsername)
+#      - name: KAFKA_BOOTSTRAP_SERVERS
+#        value: $(KafkaBrokers)
+#      - name: KAFKA_GROUP_ID
+#        value: $(KAFKA_GROUP_ID)
+      - name: UACR_DB_USERNAME
+        value: $(UACR_DB_USERNAME)
+      - name: UACR_DB_PASSWORD
+        value: $(UACR_DB_PASSWORD)
+      - name: UACR_DB_HOST
+        value: $(UACR_DB_HOST)
+#      - name: SMB_USERNAME
+#        value: $(SMB_USERNAME)
+#      - name: SMB_PASSWORD
+#        value: $(SMB_PASSWORD)
+      - name: SERVICE
+        value: uacr
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/RunSettings/prod.runsettings
+
+jobs:
+  - template: jobtemplates/dotnet-system-tests.yaml@templates
+    parameters:
+      createTestCycle: true
+      dotNetTestArguments: '-s ${{parameters.runSettingsFilePath}} --logger:"junit;LogFilePath=TestResults/TestResultsJunit.xml" --logger:"console;verbosity=detailed" --filter $(testFilter)'
+      jiraProjectKey: 'ANC'
+      testResultDir: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/TestResults
+      csprojPath: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/Signify.uACR.System.Tests.csproj
+      envVariables: ${{parameters.envVars}}
+      testCycleName: 'Test Automation Run for Commit : $(Build.SourceVersion) (uACR)-PROD'

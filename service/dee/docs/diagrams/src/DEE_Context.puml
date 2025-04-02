@@ -1,0 +1,34 @@
+@startuml ContextDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title DEE Context Diagram
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_LEFT_RIGHT()
+'LAYOUT_AS_SKETCH()
+
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Provider that performs HRE Assessment", "y")
+System_Ext(Evaluations, "Evaluations","System that stores evaluation data")
+System_Ext(BillingSystem, "Billing System","System that handles RCM billing")
+System_3P(IRIS, "IRIS Vendor System that handles DEE order management")
+System_Ext(providerpay, "Provider Pay System", "System that handles payments to providers")
+System(DEEProcessManager, "DEE Process Manager","Processes events corresponding to DEE eye testing")
+
+
+Rel_R(provider, Evaluations, "Sends completed evaluation data")
+Rel_U(Evaluations, DEEProcessManager, "Notifies evaluation is finalized")
+Rel_U(DEEProcessManager,Evaluations, "Retrieves data from evaluation")
+Rel_D(DEEProcessManager, BillingSystem, "Sends billing request")
+Rel_D(DEEProcessManager, IRIS, "Creates vendor DEE orders")
+Rel_U(IRIS,DEEProcessManager , "Acquires vendor DEE results")
+Rel_D(DEEProcessManager, providerpay, "Sends provider payment requests")
+
+
+
+
+@enduml

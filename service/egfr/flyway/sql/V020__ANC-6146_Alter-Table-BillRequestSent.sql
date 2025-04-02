@@ -1,0 +1,2 @@
+ALTER TABLE public."BillRequestSent"
+    ADD COLUMN IF NOT EXISTS "BillingProductCode" VARCHAR(50) NOT NULL DEFAULT 'eGFR';

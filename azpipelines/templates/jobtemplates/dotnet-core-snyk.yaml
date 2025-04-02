@@ -1,0 +1,54 @@
+parameters:
+- name: coreVersion
+  displayName: .NET Core version
+  type: string
+  default: '6.0.x'
+- name: solutionPath
+  displayName: Solution path
+  type: string
+  default: '**/*.sln'
+- name: serviceConnectionEndpoint
+  displayName: Service Connection Endpoint
+  type: string
+  default: ''
+- name: snykGroup
+  displayName: Snyk Service Connection Group
+  type: string
+  default: ''
+- name: failOnIssue
+  displayName: Fail On Issue
+  type: boolean
+  default: false
+- name: monitorWhen
+  displayName: Monitor When
+  type: string
+  default: 'always'
+- name: testType
+  displayName: Test Type
+  type: string
+  default: 'app'
+  
+jobs:
+- job: snyk
+  displayName: Snyk
+  variables:
+    - group: azuredevops
+    - group: ${{ parameters.snykGroup }}
+  pool: k8s-agents
+  steps:
+  - checkout: self
+    clean: false
+    fetchDepth: 0
+  - template: steptemplates/dotnet-core-build.yaml@templates
+    parameters:
+      coreVersion: ${{ parameters.coreVersion }}
+      solutionPath: ${{ parameters.solutionPath }}
+      dotnetpublish: false
+  - task: SnykSecurityScan@1
+    inputs:
+        serviceConnectionEndpoint: ${{ parameters.serviceConnectionEndpoint }}
+        testType: ${{ parameters.testType }}
+        targetFile: ${{ parameters.solutionPath }}
+        monitorWhen: ${{ parameters.monitorWhen }}
+        failOnIssues: ${{ parameters.failOnIssue }}
+        organization: '$(SnykOrgId)'

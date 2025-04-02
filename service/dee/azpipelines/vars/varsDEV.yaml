@@ -1,0 +1,5 @@
+variables:
+  EnvironmentName: DEV
+  ImagePullPolicy: Always
+  vssPath: global/serviceaccounts/kafka/kafka-global-sa-dev
+  vssMount: dev-usc-shared-aks

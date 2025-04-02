@@ -1,0 +1,1 @@
+ALTER TABLE public."SpirometryExamResults" ADD COLUMN "HasHistoryOfCopd" BOOLEAN NULL;

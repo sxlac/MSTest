@@ -1,0 +1,405 @@
+asyncapi: '2.6.0'
+info:
+  title: CKD API
+  version: '1.0.0'
+  description: Events published from CKD Process Manager
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  ckd_status/Performed:
+    description: An event that signals ckd test was performed
+    subscribe:
+      summary: An event that signals ckd test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  ckd_status/NotPerformed:
+    description: An event that signals ckd test was not performed
+    subscribe:
+      summary: An event that signals ckd test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  ckd_status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  ckd_status/BillRequestNotSent:
+    description: An event that signals bill request not sent
+    subscribe:
+      summary: An event that signals bill request not sent
+      message:
+        $ref: '#/components/messages/BillRequestNotSent'
+  ckd_status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  ckd_results/Result:
+    description: An event that signals lab results have been received
+    subscribe:
+      summary: An event that signals lab results have been received
+      message:
+        $ref: '#/components/messages/Result'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: CKD test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: CKD test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    BillRequestNotSent:
+      name: BillRequestNotSent
+      title: BillRequestNotSent
+      summary: Bill request has not been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestNotSent"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    Result:
+      name: Result
+      title: Result
+      summary: Results of test
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Result"
+  schemas:
+    Performed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+    NotPerformed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ReasonType, Reason, ReasonNotes]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Member apprehension
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Normality is Undetermined
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+    BillRequestSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, BillingProductCode, BillId]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: CKD
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    BillRequestNotSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: CKD
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    ProviderPayRequestSent:
+      type: object
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ProviderPayProductCode:
+          type: string
+          format: string
+          description: The provider pay product code for this status event
+          example: CKD
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    ResultType:
+      type: object
+      properties:
+        Type:
+          type: string
+          format: string
+          description: Element tested e.g. Albumin, Creatinine, uAcr
+          example: Albumin
+        Result:
+          type: string
+          format: string
+          description: Level of Type present
+          example: 10
+        ResultUnit:
+          type: string
+          format: string
+          description: Unit of measurement for test results
+          example: mg/L
+        Severity:
+          type: string
+          format: string
+          description: Severity of result
+          example: High, null
+    Result:
+      type: object
+      required: [ProductCode, EvaluationId, ReceivedDate, IsBillable, Determination, Results]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: CKD
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date results received
+          example: 2023-11-21T10:02:18.343773+00:00
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: ["A","N","U"]
+        ExpiryDate:
+          type: string
+          format: DateTimeOffset
+          description: Expiration date of results
+          example: 2023-11-21T10:02:18.343773+00:00
+        Results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResultType"
+
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.                

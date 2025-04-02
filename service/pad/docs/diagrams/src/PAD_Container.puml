@@ -1,0 +1,54 @@
+@startuml ContainerDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Container.puml
+
+title PAD Process Manager Container Diagram
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+
+Person(provider, "Provider", "Provider that performs HRE assessment")
+
+System_Boundary(c2, "PAD Process Manager System"){
+    Container(padprocessmanager, "PAD Process Manager", ".Net Core", "Orchestrates PAD workflow")
+    ContainerDb(paddatabase, "PAD", "Postgres", "Stores pad exam data")
+    Container(fileserver, "Waveform Data Store", "Stores waveform PDF files")
+    Rel_D(padprocessmanager, paddatabase, "Read & write to", "Postgres/5432")
+    Rel_D(padprocessmanager, fileserver, "Reads & stores pdf files")
+}
+
+Container(evaluation, "EvaluationApi", "Aspnet API")
+Container(provider, "ProviderApi", "Aspnet API")
+Container(member, "MemberApi", "Aspnet API")
+Container(rcm, "RCMApi", "Aspnet API")
+Container(providerpay, "ProviderPayApi", "Aspnet API")
+ContainerDb(evaltopic, "Evaluation", "Kafka", "Stores Evaluation Finalized messages")
+ContainerDb(pfddeliverytopic, "PDF Delivery", "Kafka", "Stores PDF Delivery messages")
+ContainerDb(rcmbillingtopic, "RCM Billing", "Kafka", "Stores RCM Bill request messages")
+ContainerDb(cdieventtopic, "CDI Events", "Kafka", "Stores PDF Delivery messages")
+
+ContainerDb(rcmbillrequesttopic, "RCM Bill Request", "Kafka", "Stores RCM Bill Request Messages")
+ContainerDb(padperformedtopic, "PAD Performed", "Kafka", "Stores PAD Performed Messages")
+ContainerDb(padnotperformedtopic, "PAD Not Performed", "Kafka", "Stores PAD Not Performed Messages")
+ContainerDb(providerpayrequesttopic, "Provider Pay Request", "Kafka", "Stores Provider Pay Request Messages")
+ContainerDb(resultsreceivedtopic, "Result Received", "Kafka", "Stores Results Received Messages")
+ContainerDb(statuscodetopic, "Status Code", "Kafka", "Stores PAD Status Code Changed Messages")
+
+Rel(padprocessmanager, evaluation, "make API call to", "JSON/HTTPS")
+Rel(padprocessmanager, provider, "make API call to", "JSON/HTTPS")
+Rel(padprocessmanager, member, "make API call to", "JSON/HTTPS")
+Rel(padprocessmanager, rcm, "make API call to", "JSON/HTTPS")
+Rel(padprocessmanager, providerpay, "make API call to", "JSON/HTTPS")
+Rel(evaltopic, padprocessmanager, "Reads messages from topic", "JSON/Kafka")
+Rel(pfddeliverytopic, padprocessmanager, "Reads messages from topic", "JSON/Kafka")
+Rel(rcmbillingtopic, padprocessmanager, "Reads messages from topic", "JSON/Kafka")
+Rel(cdieventtopic, padprocessmanager, "Reads messages from topic", "JSON/Kafka")
+
+Rel_U(padprocessmanager, rcmbillrequesttopic, "Sends messages to topic", "JSON/Kafka")
+Rel_U(padprocessmanager, padperformedtopic, "Sends messages to topic", "JSON/Kafka")
+Rel_U(padprocessmanager, padnotperformedtopic, "Sends messages to topic", "JSON/Kafka")
+Rel_U(padprocessmanager, providerpayrequesttopic, "Sends messages to topic", "JSON/Kafka")
+Rel_U(padprocessmanager, resultsreceivedtopic, "Sends messages to topic", "JSON/Kafka")
+Rel_U(padprocessmanager, statuscodetopic, "Sends messages to topic", "JSON/Kafka")
+
+@enduml

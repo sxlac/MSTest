@@ -1,0 +1,82 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: signify-fobt-svc
+  description: FOBT process manager
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    #    dev.azure.com/project-repo: HCC/ancillary # Leaving out for now until this is moved out of a mono-repo, as to avoid noise from the other process managers being displayed
+  tags:
+    - ancillary
+    - dps
+    - labrats 
+    - dpsi
+    - fobt
+    - tier3
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51218007/FOBT+Process+Manager
+      title: FOBT Process Manager
+spec:
+  type: service
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  dependsOn:
+    - resource:fobt-db
+    - Resource:kafka
+  providesApis:
+    - fobt-kafka-events
+  consumesApis: # These must match exactly as they are named in their API in Backstage for Backstage to properly link them
+    - appointment-api
+    - cdi-api
+    - evaluation
+    - inventory
+    - labs # Labs API
+    - labs-events # Kafka events from Labs Home Access
+    - member
+    - okta
+    # - pdfdelivery # this is missing here because it's not configured in backstage. This is where it comes from: https://dev.azure.com/signifyhealth/HCC/_git/coreservices?version=GBmaster&_a=contents&path=/onprem/signify.cap.kafkapublisher. Should be added when available.
+    - provider
+    - providerpay
+    - rcm
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: fobt-db
+  description: Database for the FOBT process manager
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - postgres
+    - fobt-db
+spec:
+  type: database
+  lifecycle: production
+  owner: group:dps
+  system: dps
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: fobt-kafka-events
+  description: FOBT Kafka Events API
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - kafka
+    - json
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219165/Lab+Status+Contracts
+      title: FOBT Status Contract
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219279/Lab+Result+Contracts
+      title: FOBT Result Contract
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  definition:
+    $text: https://dev.azure.com/signifyhealth/HCC/_git/ancillary?path=/service/fobt/docs/asyncapi.yaml
+    

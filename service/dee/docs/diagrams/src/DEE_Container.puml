@@ -1,0 +1,59 @@
+@startuml ContainerDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Container.puml
+
+title DEE Process Manager Container Diagram
+
+skinparam defaultFontSize 10
+
+'LAYOUT_LEFT_RIGHT()
+
+LAYOUT_WITH_LEGEND()
+
+
+System_Boundary(c2, "DEE Process"){
+
+    Container(DEEProcessManager, "DEE Process Manager", ".Net Core", "Orchestrates DEE workflow")
+    ContainerDb(DEEDb, "DEE", "Postgres Server", "Stores DEE exam data.")
+    Rel(DEEProcessManager, DEEDb, "Read using EFCore", "Postgres/5432")
+    Rel(DEEDb,DEEProcessManager, "Writes using EFCore", "Postgres/5432")
+}
+
+ContainerDb(evaltopic, "Evaluation", "Kafka", "Stores Evaluation event")
+Rel_D(evaltopic,DEEProcessManager , "Reads evaluation event", "JSON/HTTP")
+
+ContainerDb(cditopic, "CDI Events", "Kafka", "Stores CDI events")
+Rel_D(cditopic, DEEProcessManager, "Subscribes", "JSON/HTTP")
+
+System_3P(irisOrders, "IRIS Order Queue", "Stores DEE orders")
+Rel_L(DEEProcessManager, irisOrders, "Writes new DEE orders", "AMQP")
+
+System_3P(irisImages, "IRIS Azure Blob storage", "Stores DEE images")
+Rel_L(DEEProcessManager, irisImages, "Write new DEE images", "SMB")
+
+System_3P(irisResults, "IRIS Result Queue", "Stores DEE results")
+Rel_D(irisResults, DEEProcessManager, "Reads Interpreted DEE results", "AMQP")
+
+Container(evaluationApi, "EvaluationApi", "Aspnet API", "Gets evaluation answers")
+Rel_L(evaluationApi, DEEProcessManager, "Gets evaluation answers", "JSON/HTTPS")
+
+Container(memberApi, "MemberApi", "Aspnet API", "Gets member details")
+Rel_L(memberApi,DEEProcessManager, "Gets member details", "JSON/HTTPS")
+
+Container(providerApi, "ProviderApi", "Aspnet API", "Gets provider details")
+Rel_R(providerApi,DEEProcessManager, "Gets provider details", "JSON/HTTPS")
+
+Container(rcmApi, "RcmApi", "Aspnet API", "Posts billing request")
+Rel_R(DEEProcessManager,rcmApi, "Posts billing request", "JSON/HTTPS")
+
+ContainerDb(deeresultstopic, "DEE Results", "Kafka", "Stores DEE results")
+Rel(DEEProcessManager, deeresultstopic, "Publishes", "JSON/Kafka")
+
+ContainerDb(rcmtopic, "RCM bill", "Kafka", "Stores Billed information")
+Rel_D(DEEProcessManager, rcmtopic, "Publishes", "JSON/Kafka")
+
+ContainerDb(deestatustopic, "DEE Status", "Kafka", "Stores DEE statuses")
+Rel_D(DEEProcessManager, deestatustopic, "Publishes", "JSON/Kafka")
+
+'Lay_R(iris, deeresultstopic)
+
+@enduml

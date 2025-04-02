@@ -1,0 +1,52 @@
+@startuml ContainerDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Container.puml
+
+title CKD Process Manager Container Diagram
+
+skinparam defaultFontSize 10
+
+'LAYOUT_LEFT_RIGHT()
+
+LAYOUT_WITH_LEGEND()
+
+
+System_Boundary(c2, "CKD Process"){
+
+    Container(CKDProcessManager, "CKD Process Manager", ".Net Core", "Orchestrates CKD workflow")
+
+    ContainerDb(CKDDb, "CKD", "Postgres", "Stores Evaluations that have CKD and their workflow status.")
+
+    Rel(CKDProcessManager, CKDDb, "Read & write to", "Postgres/5432")
+
+}
+
+Container(inventory, "InventoryApi", "Aspnet API")
+Rel_R(CKDProcessManager, inventory, "make API call to", "JSON/HTTPS")
+
+ContainerDb(inventorytopic, "Inventory", "Kafka", "Stores Inventory events")
+Rel_D(inventory, inventorytopic, "Store event", "JSON/Kafka")
+Rel_D(CKDProcessManager, inventorytopic, "Reads message from topic", "JSON/Kafka")
+
+Container(evaluation, "EvaluationApi", "Aspnet API")
+Rel(CKDProcessManager, evaluation, "make API call to", "JSON/HTTPS")
+
+Container(provider, "ProviderApi", "Aspnet API")
+Rel(CKDProcessManager, provider, "make API call to", "JSON/HTTPS")
+
+Container(member, "MemberApi", "Aspnet API")
+Rel(CKDProcessManager, member, "make API call to", "JSON/HTTPS")
+
+Container(rcm, "RCMApi", "Aspnet API")
+Rel(CKDProcessManager, rcm, "make API call to", "JSON/HTTPS")
+
+
+ContainerDb(evaltopic, "Evaluation", "Kafka", "Stores Evaluation messages")
+Rel(evaltopic, CKDProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+
+ContainerDb(pfddelivery, "PDF Delivery", "Kafka", "Stores PDF Delivery messages")
+Rel(pfddelivery, CKDProcessManager, "Reads messages from topic", "JSON/Kafka")
+
+'Lay_R(inventory, inventorytopic)
+
+@enduml

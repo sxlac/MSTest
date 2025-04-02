@@ -1,0 +1,11 @@
+#Only triggered manually
+trigger: none
+
+variables:
+  - group: ancillary-qe-pipeline-uat
+  - name: service
+    value: EGFR
+  - name: tag
+    value: egfr
+jobs:
+- template: /azpipelines/templates/jobtemplates/test-automation-template.yaml

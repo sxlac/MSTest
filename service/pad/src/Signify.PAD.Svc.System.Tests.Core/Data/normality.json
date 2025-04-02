@@ -1,0 +1,83 @@
+[
+  {
+    "leftValue": "99",
+    "rightValue": "99",
+    "leftNormality": "U",
+    "rightNormality": "U",
+    "determination": "U",
+    "lSeverity": null,
+    "rSeverity": null
+  },
+  {
+    "leftValue": "99",
+    "rightValue": "1",
+    "leftNormality": "U",
+    "rightNormality": "N",
+    "determination": "N",
+    "lSeverity": null,
+    "rSeverity": "Normal"
+  },
+  {
+    "leftValue": "99",
+    "rightValue": "0.6",
+    "leftNormality": "U",
+    "rightNormality": "A",
+    "determination": "A",
+    "lSeverity": null,
+    "rSeverity": "Mild"
+  },
+  {
+    "leftValue": "1",
+    "rightValue": "99",
+    "leftNormality": "N",
+    "rightNormality": "U",
+    "determination": "N",
+    "lSeverity": "Normal",
+    "rSeverity": null
+  },
+  {
+    "leftValue": "1",
+    "rightValue": "1",
+    "leftNormality": "N",
+    "rightNormality": "N",
+    "determination": "N",
+    "lSeverity": "Normal",
+    "rSeverity": "Normal"
+  },
+  {
+    "leftValue": "1",
+    "rightValue": "0.3",
+    "leftNormality": "N",
+    "rightNormality": "A",
+    "determination": "A",
+    "lSeverity": "Normal",
+    "rSeverity": "Moderate"
+  },
+  {
+    "leftValue": "0.3",
+    "rightValue": "99",
+    "leftNormality": "A",
+    "rightNormality": "U",
+    "determination": "A",
+    "lSeverity": "Moderate",
+    "rSeverity": null
+  },
+  {
+    "leftValue": "0.6",
+    "rightValue": "1",
+    "leftNormality": "A",
+    "rightNormality": "N",
+    "determination": "A",
+    "lSeverity": "Mild",
+    "rSeverity": "Normal"
+  },
+  {
+    "leftValue": "0.6",
+    "rightValue": "0.3",
+    "leftNormality": "A",
+    "rightNormality": "A",
+    "determination": "A",
+    "lSeverity": "Mild",
+    "rSeverity": "Moderate"
+  }
+]

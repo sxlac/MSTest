@@ -1,0 +1,60 @@
+parameters:
+  - name: envVars
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: KAFKA_PASSWORD
+        value: $(KAFKA_PASSWORD)
+      - name: KAFKA_USERNAME
+        value: $(KAFKA_USERNAME)
+      - name: KAFKA_PUB_PASSWORD
+        value: $(KAFKA_PUB_PASSWORD)
+      - name: KAFKA_PUB_USERNAME
+        value: $(KAFKA_PUB_USERNAME)
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: $(KAFKA_BOOTSTRAP_SERVERS)
+      - name: KAFKA_GROUP_ID
+        value: $(KAFKA_GROUP_ID)
+      - name: HBA1CPOC_DB_USERNAME
+        value: $(PostgresUser)
+      - name: HBA1CPOC_DB_PASSWORD
+        value: $(PostgresPassword)
+      - name: HBA1CPOC_DB_HOST
+        value: $(HBA1CPOC_DB_HOST)
+      - name: SMB_USERNAME
+        value: $(SMB_USERNAME)
+      - name: SMB_PASSWORD
+        value: $(SMB_PASSWORD)
+      - name: API_SECRET_KEY_TESTVENDOR
+        value: $(API_SECRET_KEY_TESTVENDOR)
+      - name: API_SECRET_KEY_HBH
+        value: $(API_SECRET_KEY_HBH)
+      - name: LD_SDK_KEY
+        value: $(LD_SDK_KEY)
+      - name: LD_USER_KEY
+        value: $(LD_USER_KEY)
+      - name: LD_USERNAME
+        value: $(LD_USERNAME)
+      - name: SERVICE
+        value: hba1cpoc
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/hba1cpoc/src/Signify.HBA1CPOC.System.Tests/RunSettings/uat.runsettings
+  - name: testCycleName
+    type: string
+    default: 'Test Automation Run for Commit : $(Build.SourceVersion) (HBA1CPOC)'
+
+jobs:
+  - template: jobtemplates/dotnet-system-tests.yaml@templates
+    parameters:
+      createTestCycle: true
+      dotNetTestArguments: '-s ${{parameters.runSettingsFilePath}} --logger:"console;verbosity=detailed" --filter TestCategory=regression'
+      jiraProjectKey: 'ANC'
+      csprojPath: $(Build.Repository.Name)/service/hba1cpoc/src/Signify.HBA1CPOC.System.Tests/Signify.HBA1CPOC.System.Tests.csproj
+      envVariables: ${{parameters.envVars}}
+      testCycleName: ${{ parameters.testCycleName }}

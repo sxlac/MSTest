@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <TestRunParameters>
+		<Parameter name="env" value="uat" />
+		<Parameter name="AppointmentApiUrl" value="https://appointmentapi.uat.signifyhealth.com" />
+        <Parameter name="CapacityApiUrl" value="https://coreapi.uat.signifyhealth.com/capacity" />
+        <Parameter name="CdiApiUrl" value="https://cdi.uat.signifyhealth.com/api" />
+        <Parameter name="CodingApiUrl" value="https://coding.uat.signifyhealth.com/api" />
+        <Parameter name="EvaluationApiUrl" value="https://coreapi.uat.signifyhealth.com/evaluation" />
+        <Parameter name="MemberApiUrl" value="https://coreapi.uat.signifyhealth.com/member" />
+        <Parameter name="AvailabilityApiUrl" value="https://coreapi.uat.signifyhealth.com/availability" />
+        <Parameter name="DataFactoryApiUrl" value="https://datafactory-api.uat.signifyhealth.com/api" />
+        <Parameter name="ProviderApiUrl" value="https://coreapi.uat.signifyhealth.com/provider" />
+        <Parameter name="ProductApiUrl" value="https://coreapi.uat.signifyhealth.com/product" />
+        <Parameter name="ProviderPayApiUrl" value="https://finance.uat.signifyhealth.com/providerpay/v1" />
+        <Parameter name="SchedulingApiUrl" value="https://coreapi.uat.signifyhealth.com/scheduling" />
+        <Parameter name="Okta.Url" value="https://login-staging.signifyhealth.com" />
+        <Parameter name="Okta.ClientId" value="0oaq0wnz6kZOdapot0h7" />
+        <Parameter name="Okta.RedirectUrl" value="http://localhost:5000/swagger/oauth2-redirect.html" />
+        <Parameter name="Okta.Scope" value="credentialing profile openid availabilityapi capacityapi clientapi evaluationapi memberapi productapi providerapi appointmentapi providerpayapi schedulingapi dpsrmsilrapi" />
+        <Parameter name="InternalLabResultApiUrl" value="https://rms-ilr-api.uat.signifyhealth.com/" />
+        <Parameter name="LabsWebhookApiUrl" value="https://webhooks.uat.signifyhealth.com/dps" />
+    </TestRunParameters>
+    <MSTest>
+        <Parallelize>
+            <Workers>15</Workers>
+            <Scope>MethodLevel</Scope>
+        </Parallelize>
+    </MSTest>
+    <LoggerRunSettings>
+        <Loggers>
+          <Logger friendlyName="console" enabled="True">
+            <Configuration>
+                <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="trx" enabled="True">
+            <Configuration>
+              <LogFileName>TestResults.trx</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="junit" enabled="True">
+            <Configuration>
+              <LogFileName>TestResultsJunit.xml</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="xunit" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsXunit.xml</LogFileName>
+                <Verbosity>detailed</Verbosity>
+              </Configuration>
+          </Logger>
+          <Logger friendlyName="html" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsHtml.html</LogFileName>
+              </Configuration>
+          </Logger>
+        </Loggers>
+    </LoggerRunSettings>
+</RunSettings>

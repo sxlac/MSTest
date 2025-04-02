@@ -1,0 +1,80 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: signify-dee-svc
+  description: DEE process manager
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  #    dev.azure.com/project-repo: HCC/ancillary # Leaving out for now until this is moved out of a mono-repo, as to avoid noise from the other process managers being displayed
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - dpsi
+    - dee
+    - tier3
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219587/DEE+Process+Manager
+      title: DEE Process Manager
+spec:
+  type: service
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  dependsOn:
+    - resource:dee-db
+    - Resource:kafka
+  providesApis:
+    - dee-kafka-events
+  consumesApis: # These must match exactly as they are named in their API in Backstage for Backstage to properly link them
+    - appointment-api
+    - cdi-api
+    - evaluation
+    - member
+    - okta
+    # - pdfdelivery # this is missing here because it's not configured in backstage. This is where it comes from: https://dev.azure.com/signifyhealth/HCC/_git/coreservices?version=GBmaster&_a=contents&path=/onprem/signify.cap.kafkapublisher. Should be added when available.
+    - provider
+    - providerpay
+    - rcm
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: dee-db
+  description: Database for the DEE process manager
+  tags:
+    - ancillary
+    - dps
+    - labrats
+    - dpsi
+    - postgres
+    - dee-db
+spec:
+  type: database
+  lifecycle: production
+  owner: group:dps
+  system: dps
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: dee-kafka-events
+  description: DEE Kafka Events API
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - kafka
+    - json
+  links:
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219165/Lab+Status+Contracts
+      title: DEE Status Contract
+    - url: https://cvs-hcd.atlassian.net/wiki/spaces/AncillarySvcs/pages/51219279/Lab+Result+Contracts
+      title: DEE Result Contract
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: group:dps
+  system: dps
+  definition:
+    $text: https://dev.azure.com/signifyhealth/HCC/_git/ancillary?path=/service/dee/docs/asyncapi.yaml
+    

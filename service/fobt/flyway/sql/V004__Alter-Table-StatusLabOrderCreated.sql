@@ -1,0 +1,1 @@
+INSERT INTO "FOBTStatusCode" ("FOBTStatusCodeId", "StatusCode")  VALUES  (8,'LabOrderCreated') ON CONFLICT DO NOTHING;

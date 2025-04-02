@@ -1,0 +1,70 @@
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - master
+      - feature/*
+      - release/*
+      - ci/*
+  paths:
+    include:
+      - service/ckd/*
+    exclude:
+      - service/ckd/flyway/*
+      - service/ckd/tf/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+variables:
+  - group: azuredevops
+  - group: dps-shared-all
+  - name: RootFolder
+    value: 'service'
+  - name: appName
+    value: 'ckd'
+  - name: Sln
+    value: 'Signify.CKD.Svc.sln'
+
+stages:
+  - template: stagetemplates/dotnet-docker.yaml@templates
+    parameters:
+      coreVersion: 6.0.x
+      gitVersionFile: $(RootFolder)/$(appName)/gitversion.yml
+      dockerComposeFile: $(RootFolder)/$(appName)/docker-compose.yaml
+      dockerComposeService: signify-ckd-svc
+      kubernetesManifest: $(RootFolder)/$(appName)/k8s/deployment.yaml
+      solutionPath: $(RootFolder)/$(appName)/src/$(Sln)
+
+      dockerCustomSteps:
+      # Adds a build tag from the full commit SHA of this build.
+      #
+      # This can be used to reference the precise build during deployment by
+      # other pipelines.
+      - task: Bash@3
+        displayName: 'Tag build'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[build.addbuildtag]$(Build.SourceVersion)"
+            
+  # TODO: 2023/11/22 - SRE's working on snyk integration to templates. 
+  # TODO: SRE-4917 - Create Snyk templates
+  # - stage: 'SecurityScan'
+  #   variables:
+  #     - group: DPS-Snyk
+  #   jobs:
+  #   - job: SnykSecurityScan
+  #     steps:
+  #     - task: SnykSecurityScan@1
+  #       inputs:
+  #         serviceConnectionEndpoint: 'Snyk DPS'
+  #         testType: app
+  #         testDirectory: $(rootFolder)/$(appName)/src/$(Sln)
+  #         monitorWhen: always
+  #         failOnIssues: false
+  #         organization: $(SnykOrgId)
+  #         projectName: Signify.CKD.Svc

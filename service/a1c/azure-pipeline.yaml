@@ -1,0 +1,85 @@
+# Docker
+# Build a Docker image 
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - master
+      - feature/*
+      - release/*
+  tags:
+    include:
+      - release/*
+  paths:
+    include:
+      - service/a1c/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates 
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+variables:
+  - group: azure
+  - group: azuredevops
+  - name: k8sNamespace
+    value: 'ancillary'
+  - name: appName
+    value: 'a1c'
+  - name: rootFolder
+    value: 'service'
+  - name: coreVersion
+    value: '5.0.x'
+  - name: az-projectid
+    value: signifyhealth.azurecr.io
+  - name: tag
+    value: '$(Build.BuildId)'
+  - name: vmImageName
+    value: 'prod-linux-build'
+  - name: DOTNET_CLI_HOME
+    value: /tmp
+  - name: BuildConfiguration
+    value: release
+  - name: pushContainerImage
+    ${{ if eq( variables['Build.SourceBranchName'], 'master' ) }}: 
+      value: true
+    ${{ if startsWith( variables['Build.SourceBranch'], 'refs/heads/release' ) }}: 
+      value: true
+    ${{ if startsWith( variables['Build.SourceBranch'], 'refs/tags/release' ) }}: 
+      value: true
+
+stages:
+- stage: 'buildCI' 
+  jobs:
+  - job: BuildAndTestCI
+    steps:
+    - template: steptemplates/ST_dotnetcore_build_test_ci.yaml@templates  # Template reference
+      parameters:
+        coreVersion: $(coreVersion)
+        gitVersionPath: '$(rootFolder)/$(appName)/gitversion.yaml'
+        coverlet: true
+        workingdir: '$(rootFolder)/$(appName)' 
+        runUnitTests: true
+        buildConfiguration: $(BuildConfiguration)
+        addcoverletnuget: false
+
+  - job: DockerBuildAndScan
+    variables:
+      DOCKER_BUILDKIT: 1
+      NewRelic:AppName: '$(appName)${dash}${EnvironmentName}'
+    steps:
+    - template: steptemplates/ST_docker_compose.yaml@templates  # Template reference
+      parameters:
+        containerregis: "ACRSignifyHealthProd"
+        azureSubscription: "$(az-acr-resourcegroup-prod)"
+        azureContainerRegistry: '$(az-container-registry)'
+        containerRegistryType: "Azure Container Registry"
+        gitVersionPath: "$(rootFolder)/$(appName)/GitVersion.yaml"
+        containerImageName: "signify-a1c-svc"
+        workingdir: '$(rootFolder)/$(appName)' 

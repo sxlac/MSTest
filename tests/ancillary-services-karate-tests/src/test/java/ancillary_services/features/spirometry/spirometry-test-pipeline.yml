@@ -1,0 +1,11 @@
+#Only triggered manually
+trigger: none
+
+variables:
+  - group: ancillary-qe-pipeline-uat
+  - name: service
+    value: SPIRO
+  - name: tag
+    value: spirometry
+jobs:
+- template: /azpipelines/templates/jobtemplates/test-automation-template.yaml

@@ -1,0 +1,22 @@
+CREATE TABLE "PDFToClient"
+(
+    "PDFDeliverId" SERIAL PRIMARY KEY,
+    "EventId" VARCHAR(40),
+    "EvaluationId" BIGINT NOT NULL,
+    "DeliveryDateTime" TIMESTAMP WITH TIME ZONE,
+    "DeliveryCreatedDateTime" TIMESTAMP WITH TIME ZONE,
+    "BatchId" BIGINT NOT NULL,
+    "BatchName" VARCHAR(200),
+    "PADId" INTEGER NOT NULL REFERENCES "PAD"("PADId"),
+    "CreatedDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 
+
+INSERT INTO "PADStatusCode" ("PADStatusCodeId", "StatusCode") VALUES  (3, 'BillableEventRecieved');
+
+CREATE TABLE "PADRCMBilling"
+(
+    "Id" SERIAL PRIMARY KEY,
+    "BillId" VARCHAR(50),
+    "PADId" INTEGER NOT NULL REFERENCES "PAD"("PADId"),
+    "CreatedDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

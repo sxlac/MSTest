@@ -1,0 +1,2 @@
+ALTER TABLE public."BillRequest"
+    ADD COLUMN IF NOT EXISTS "BillingProductCode" VARCHAR(50) NOT NULL DEFAULT 'uACR';

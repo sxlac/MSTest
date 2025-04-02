@@ -1,0 +1,1 @@
+ALTER TABLE public."ExamNotPerformed" ADD COLUMN "Notes" VARCHAR(1024) NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE public."Exam" ALTER COLUMN "DateOfBirth" TYPE DATE USING "DateOfBirth"::DATE;

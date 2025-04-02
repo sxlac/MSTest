@@ -1,0 +1,519 @@
+asyncapi: '2.6.0'
+info:
+  title: FOBT API
+  version: '1.0.0'
+  description: Events published from FOBT Process Manager
+servers:
+  preprod:
+    url: pkc-ldvmy.centralus.azure.confluent.cloud:9092
+    protocol: kafka
+    description: Preprod brokers
+  prod:
+    url: lkc-mxdq7-4knyg.centralus.azure.glb.confluent.cloud:9092
+    protocol: kafka
+    description: Production brokers
+defaultContentType: application/json
+channels:
+  FOBT_Results/Results:
+    description: An event containing lab results
+    subscribe:
+      summary: An event containing lab results
+      message:
+        $ref: '#/components/messages/Results'
+  FOBT_Status/Performed:
+    description: An event that signals fobt test was performed
+    subscribe:
+      summary: An event that signals fobt test was performed
+      message:
+        $ref: '#/components/messages/Performed'
+  FOBT_Status/NotPerformed:
+    description: An event that signals fobt test was not performed
+    subscribe:
+      summary: An event that signals fobt test was not performed
+      message:
+        $ref: '#/components/messages/NotPerformed'
+  FOBT_Status/BillRequestSent:
+    description: An event that signals bill request sent
+    subscribe:
+      summary: An event that signals bill request sent
+      message:
+        $ref: '#/components/messages/BillRequestSent'
+  FOBT_Status/BillRequestNotSent:
+    description: An event that signals bill request not sent
+    subscribe:
+      summary: An event that signals bill request not sent
+      message:
+        $ref: '#/components/messages/BillRequestNotSent'
+  FOBT_Status/ProviderPayRequestSent:
+    description: An event that signals provider pay request sent
+    subscribe:
+      summary: An event that signals provider pay request sent
+      message:
+        $ref: '#/components/messages/ProviderPayRequestSent'
+  FOBT_Status/ProviderNonPayableEventReceived:
+    description: An event signalling that the exam does not satisfy provider payable criteria
+    subscribe:
+      summary: An event signalling that the exam does not satisfy provider payable criteria
+      message:
+        $ref: '#/components/messages/ProviderNonPayableEventReceived'
+  FOBT_Status/ProviderPayableEventReceived:
+    description: An event signalling that the exam does satisfy provider payable criteria
+    subscribe:
+      summary: An event signalling that the exam does satisfy provider payable criteria
+      message:
+        $ref: '#/components/messages/ProviderPayableEventReceived'
+components:
+  messages:
+    Performed:
+      name: Performed
+      title: Performed
+      summary: FOBT test was performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Performed"
+    NotPerformed:
+      name: NotPerformed
+      title: NotPerformed
+      summary: FOBT test was not performed
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/NotPerformed"
+    BillRequestSent:
+      name: BillRequestSent
+      title: BillRequestSent
+      summary: Bill request has been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestSent"
+    BillRequestNotSent:
+      name: BillRequestNotSent
+      title: BillRequestNotSent
+      summary: Bill request has not been sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/BillRequestNotSent"
+    ProviderPayRequestSent:
+      name: ProviderPayRequestSent
+      title: ProviderPayRequestSent
+      summary: ProviderPay request sent
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayRequestSent"
+    ProviderNonPayableEventReceived:
+      name: ProviderNonPayableEventReceived
+      title: ProviderNonPayableEventReceived
+      summary: ProviderNonPayable Event Received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderNonPayableEventReceived"
+    ProviderPayableEventReceived:
+      name: ProviderPayableEventReceived
+      title: ProviderPayableEventReceived
+      summary: ProviderPayable Event Received
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/ProviderPayableEventReceived"
+    Results:
+      name: Results
+      title: Results
+      summary: Results of test
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: "#/components/schemas/Results"
+  schemas:
+    Performed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        Barcode:
+          type: string
+          format: string
+          description: Barcode of test kit performed
+          example: 612189
+    NotPerformed:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ReasonType, Reason, ReasonNotes]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ReasonType:
+          type: string
+          format: string
+          description: Reason type
+          example: Unable to perform
+        Reason:
+          type: string
+          format: string
+          description: Reason not performed
+          example: Insufficient training
+        ReasonNotes:
+          type: string
+          format: string
+          description: Additional notes
+    BillRequestSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, BillingProductCode, BillId]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillId:
+          type: string
+          format: uuid
+          description: Bill ID
+          example: e0cc95d4-e2c6-5cf2-b5b5-6f490624fcd2
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: FOBT
+        PdfDeliveryDate:
+          type: string
+          format: DateTime
+          description: Time date of PDF Delivered event
+          example: 2023-11-21T10:02:18.343773
+    BillRequestNotSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, BillingProductCode]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        BillingProductCode:
+          type: string
+          format: string
+          description: Product code for bill request sent
+          example: FOBT
+    ProviderPayRequestSent:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ProviderPayProductCode, PaymentId, ParentEventDateTime]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ProviderPayProductCode:
+          type: string
+          format: string
+          description: The provider pay product code for this status event
+          example: FOBT
+        PaymentId:
+          type: string
+          format: uuid
+          description: Payment ID
+          example: 3c347362-e867-528a-a8d9-eb00b160686d
+        ParentEventDateTime:
+          type: string
+          format: DateTimeOffset
+          description: Time date of Parent Event DateTime event
+          example: 2023-11-21T10:02:18.343773+00:00
+    ProviderNonPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent, Reason]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+        Reason:
+          type: string
+          format: string
+          description: Reason exam is non payable
+    ProviderPayableEventReceived:
+      type: object
+      required: [ProductCode, CreatedDate, ReceivedDate, ParentCdiEvent]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: A product code for the event
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        MemberPlanId:
+          type: integer
+          format: long
+          description: ID of the member plan for this test
+          example: 35506630
+        ProviderId:
+          type: integer
+          format: int
+          description: ID of the provider for this test
+          example: 85924
+        CreatedDate:
+          type: string
+          format: DateTimeOffset
+          description: The date time for this status event
+          example: 2023-11-21T04:05:00.674662+00:00
+        ReceivedDate:
+          type: string
+          format: DateTimeOffset
+          description: Time date received event
+          example: 2023-11-21T10:02:18.343773+00:00
+        ParentCdiEvent:
+          type: string
+          format: string
+          description: Name of the CDI event that triggered ProviderNonPayableEventReceived
+          example: CdiPassedReceived
+    Group:
+      type: object
+      properties:
+        Result:
+          type: string
+          format: string
+          description: Result of test
+          example: Negative, Positive
+        Exception:
+          type: string
+          format: string
+          description: Indicates an issue with the test
+          example: Results Expired
+        AbnormalIndicator:
+          type: string
+          format: string
+          description: Overall normality of the results
+          example: ["A","N","U"]
+    Results:
+      type: object
+      required: [ProductCode, EvaluationId, Determination, Barcode, IsBillable, Result]
+      properties:
+        ProductCode:
+          type: string
+          format: string
+          description: ProductCode of the exam/test
+          example: FOBT
+        EvaluationId:
+          type: integer
+          format: long
+          description: Evaluation this event is for
+          example: 293847
+        PerformedDate:
+          type: string
+          format: DateTime
+          description: The date the test was performed
+          example: 2023-11-21T04:05:00.674662
+        ReceivedDate:
+          type: string
+          format: DateTime
+          description: Time date results received
+          example: 2023-11-21T10:02:18.343773
+        MemberCollectionDate:
+          type: string
+          format: DateTime
+          description: Time date of collection
+          example: 2023-11-21T10:02:18.343773
+        Determination:
+          type: string
+          format: string
+          description: Overall normality/pathology determination of the results
+          example: ["A","N","U"]
+        Barcode:
+          type: string
+          format: string
+          description: Barcode of the test kit
+          example: 255636
+        IsBillable:
+          type: boolean
+          description: Whether or not these results qualify for billing
+          example: true
+        Result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          type:
+            type: string
+            description: Message Type.                

@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  signify-ckd-svc:
+    image: signifyhealth.azurecr.io/signify-ckd-svc:${TAG}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - '5000:5000'
+    build:
+      context: ./src
+      #path to Dockerfile is relative to the context path set above
+      dockerfile: ./Signify.CKD.Svc/Dockerfile
+      

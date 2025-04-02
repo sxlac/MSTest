@@ -1,0 +1,771 @@
+﻿{
+  "BillRequestSent": [
+    {
+      "columnName": "BillRequestSentId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "BillId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "Accepted",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "AcceptedAt",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "ClarificationFlag": [
+    {
+      "columnName": "ClarificationFlagId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CdiFlagId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreateDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "ProviderPay": [
+    {
+      "columnName": "ProviderPayId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PaymentId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    }
+  ],
+  "SessionGrade": [
+    {
+      "columnName": "SessionGradeId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "IsGradable",
+      "isNullable": "NO",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "SessionGradeCode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "SpirometryExam": [
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ClientId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "FormVersionId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ApplicationId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ProviderId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "MemberId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "MemberPlanId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CenseoId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AppointmentId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "DateOfService",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "FirstName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "MiddleName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LastName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "DateOfBirth",
+      "isNullable": "YES",
+      "dataType": "timestamp"
+    },
+    {
+      "columnName": "AddressLineOne",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "AddressLineTwo",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "City",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "State",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ZipCode",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NationalProviderIdentifier",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "EvaluationReceivedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "EvaluationCreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "NormalityIndicator": [
+    {
+      "columnName": "NormalityIndicatorId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Normality",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Indicator",
+      "isNullable": "NO",
+      "dataType": "bpchar"
+    }
+  ],
+  "NotPerformedReason": [
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "AnswerId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Reason",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "OccurrenceFrequency": [
+    {
+      "columnName": "OccurrenceFrequencyId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Frequency",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "ExamNotPerformed": [
+    {
+      "columnName": "ExamNotPerformedId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Notes",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "ExamStatus": [
+    {
+      "columnName": "ExamStatusId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "StatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "StatusDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreateDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "StatusCode": [
+    {
+      "columnName": "StatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Name",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "TrileanType": [
+    {
+      "columnName": "TrileanTypeId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "TrileanValue",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "Hold": [
+    {
+      "columnName": "HoldId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CdiHoldId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "ExpiresAt",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "HeldOnDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "SentAtDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReleasedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "OverreadResult": [
+    {
+      "columnName": "OverreadResultId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExternalId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "SessionId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "AppointmentId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "Fev1FvcRatio",
+      "isNullable": "NO",
+      "dataType": "numeric"
+    },
+    {
+      "columnName": "NormalityIndicatorId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "PerformedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "OverreadDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "OverreadBy",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "OverreadComment",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "BestTestId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "BestFvcTestComment",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "BestFvcTestId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "BestFev1TestComment",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "BestFev1TestId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "BestPefTestComment",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "BestPefTestId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "ReceivedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "CdiEventForPayment": [
+    {
+      "columnName": "CdiEventForPaymentId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "RequestId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "EventType",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Reason",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ApplicationId",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "PayProvider",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "DateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "SpirometryExamResults": [
+    {
+      "columnName": "SpirometryExamResultsId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SpirometryExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "SessionGradeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Fvc",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Fev1",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Fev1FvcRatio",
+      "isNullable": "YES",
+      "dataType": "numeric"
+    },
+    {
+      "columnName": "HasHighSymptomTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "HasEnvOrExpRiskTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "HasHighComorbidityTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "CopdDiagnosis",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "NormalityIndicatorId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "FvcNormalityIndicatorId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "Fev1NormalityIndicatorId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "HasSmokedTobacco",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "TotalYearsSmoking",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ProducesSputumWithCough",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "CoughMucusOccurrenceFrequencyId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "HadWheezingPast12moTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "GetsShortnessOfBreathAtRestTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "GetsShortnessOfBreathWithMildExertionTrileanTypeId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "NoisyChestOccurrenceFrequencyId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "ShortnessOfBreathPhysicalActivityOccurrenceFrequencyId",
+      "isNullable": "YES",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "LungFunctionScore",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "OverreadFev1FvcRatio",
+      "isNullable": "YES",
+      "dataType": "numeric"
+    },
+    {
+      "columnName": "HasHistoryOfCopd",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "PdfDeliveredToClient": [
+    {
+      "columnName": "PdfDeliveredToClientId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "EventId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "BatchId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "BatchName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "DeliveryDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "Spirometry_EvaluationSaga": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "Metadata",
+      "isNullable": "NO",
+      "dataType": "text"
+    },
+    {
+      "columnName": "Data",
+      "isNullable": "NO",
+      "dataType": "jsonb"
+    },
+    {
+      "columnName": "PersistenceVersion",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "SagaTypeVersion",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Concurrency",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Correlation_EvaluationId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    }
+  ],
+  "Spirometry_ProviderPaySaga": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "Metadata",
+      "isNullable": "NO",
+      "dataType": "text"
+    },
+    {
+      "columnName": "Data",
+      "isNullable": "NO",
+      "dataType": "jsonb"
+    },
+    {
+      "columnName": "PersistenceVersion",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "SagaTypeVersion",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Concurrency",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Correlation_EvaluationId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    }
+  ]
+  
+}

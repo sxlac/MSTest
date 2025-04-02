@@ -1,0 +1,2 @@
+ALTER TABLE public."HBA1CPOC" ALTER COLUMN "DateOfBirth" TYPE DATE USING "DateOfBirth"::DATE;
+ALTER TABLE public."HBA1CPOC" ALTER COLUMN "ExpirationDate" TYPE DATE USING "ExpirationDate"::DATE;

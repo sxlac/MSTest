@@ -1,0 +1,62 @@
+@startuml fobt-context-diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+'!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title FOBT Context Diagram
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_LEFT_RIGHT()
+'LAYOUT_AS_SKETCH()
+
+'LAYOUT_WITH_LEGEND()
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+
+Person(provider, "Provider", "Performs Health Risk Assessment")
+Person(member, "Member", "Takes stool sample sometime after appointment")
+
+System_Ext(everly, "Everly Health", "3rd party lab vendor that analyzes FOBT samples", $tags="3rdParty")
+
+Enterprise_Boundary(sh, "Signify") {
+    System_Ext(cc, "Care Consult\n(iPad/Mobile)")
+    System_Ext(evaluation, "Evaluation System")
+    System_Ext(appointment, "Appointment System")
+    System_Ext(member_sys, "Member System")
+    System_Ext(provider_sys, "Provider System")
+    System_Ext(labs, "Labs System")
+    System_Ext(cdi, "CDI System")
+    System_Ext(pp, "Provider Pay System")
+    System_Ext(pdf, "PDF Delivery System")
+    System_Ext(rcm, "RCM System")
+
+    System(pm, "FOBT System")
+}
+
+Rel(provider, member, "Leaves FOBT kit behind with member")
+
+Rel(provider, cc, "Performs evaluation")
+Rel_Right(cc, evaluation, "Sends evaluation answers to", "HTTPS")
+
+Rel(member, everly, "Sends stool sample to", "mail")
+Rel(pm, labs, "Sends order requests to", "HTTPS")
+Rel(labs, everly, "Sends order requests to", "SFTP")
+Rel(everly, labs, "Sends FOBT lab results to", "SFTP")
+Rel_Right(labs, pm, "Lab result and order hold events sent to", "TCP")
+
+Rel(evaluation, pm, "Evaluation events sent to", "TCP")
+Rel_Up(pm, evaluation, "Queries evaluation data from", "HTTPS")
+
+Rel(pm, appointment, "Queries appointment data from", "HTTPS")
+Rel(pm, member_sys, "Queries member data from", "HTTPS")
+Rel(pm, provider_sys, "Queries provider data from", "HTTPS")
+
+Rel(cdi, pm, "CDI events sent to", "TCP")
+Rel_Down(pm, pp, "Sends provider pay requests to", "HTTPS")
+
+Rel(pdf, pm, "pdf delivery events sent to", "TCP")
+Rel_Down(pm, rcm, "Sends billing requests to", "HTTPS")
+
+SHOW_LEGEND()
+
+@enduml

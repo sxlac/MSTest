@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Signify.A1C.Database</id>
+    <version>$version$</version>
+	<authors>A1C</authors>
+    <title>Ancillary A1C Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Ancillary A1C Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+  </metadata>
+  <files>
+	<file src="flyway\**\*.*" target="tools\flyway" />
+  </files>
+</package>

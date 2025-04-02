@@ -1,0 +1,152 @@
+---
+# NOTE: PDBs are immutable prior to v1.15. Starting with a maxUnavailable of 1 is good practice, so a deployment with 3 replicas will always have at least 2 running.
+# Additional configuration can be found at https://kubernetes.io/docs/tasks/run-application/configure-pdb/#think-about-how-your-application-reacts-to-disruptions
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerNameCKD}
+spec:
+  maxUnavailable: #{PDB:MaxUnavailable}
+  selector:
+    matchLabels:
+      app: #{DockerNameCKD}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerNameCKD}-config
+type: Opaque
+stringData:
+  db-connstr: #{DBConnectionStringCKD}
+  asb-connstr: #{AzureServiceBusCKD}
+  client-secret: #{OktaClientSecretCKD}
+  ccloud-password: #{CCloudPasswordCKD}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerNameCKD}
+  labels:
+    app: #{DockerNameCKD}
+spec:
+  clusterIP: None
+  selector:
+    app: #{DockerNameCKD}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerNameCKD}
+spec:
+  replicas: #{Replicas}
+  revisionHistoryLimit: 2
+  serviceName: #{DockerNameCKD}
+  selector:
+    matchLabels:
+      app: #{DockerNameCKD}
+  template:
+    metadata:
+      labels:
+        app: #{DockerNameCKD}
+        version: #{VersionWithSha}
+    spec:
+      containers:
+        - image: "signifyhealth.azurecr.io/#{ImageName}"
+          imagePullPolicy: Always
+          name: #{DockerNameCKD}   
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LivenessProbe__Uri
+              value: "http://*:5051/health/live/" # Note these paths must end in a '/'
+            - name: DOTNET_ENVIRONMENT
+              value: #{EnvironmentName}
+            - name: NEW_RELIC_APP_NAME
+              value: #{ProjectNameCKD}-#{EnvironmentName}
+            - name: NEW_RELIC_LICENSE_KEY
+              value: #{NewRelicLicenseKey}
+            - name: Serilog__MinimumLevel__Default
+              value: #{SerilogMinimumLevel}
+            - name: Serilog__Properties__Environment
+              value: #{EnvironmentName}
+            - name: Serilog__Properties__App
+              value: #{ProjectNameCKD}
+            - name: Serilog__Properties__Version
+              value: #{VersionWithSha}
+            - name: AkkaKafkaStream__KafkaBrokers
+              value: #{KafkaBrokers}
+            - name: AkkaKafkaStream__SecurityProtocol
+              value: sasl_ssl
+            - name: AkkaKafkaStream__Username
+              value: #{CCloudUsernameCKD}
+            - name: LaunchDarkly__SharedLicenseKey
+              value: #{LaunchDarkly:SharedLicenseKey}
+            - name: LaunchDarkly__ProjectLicenseKey
+              value: #{LaunchDarkly:ProjectLicenseKey}
+            - name: ApiUrls__ProviderPayApiUrl
+              value: #{ProviderPayUrl}
+            - name: AkkaKafkaStream__Password
+              valueFrom:
+                secretKeyRef:
+                  key: ccloud-password
+                  name: #{DockerNameCKD}-config
+            - name: ConnectionStrings__DB
+              valueFrom:
+                secretKeyRef:
+                  key: db-connstr
+                  name: #{DockerNameCKD}-config
+            - name: AkkaKafkaStream__PersistenceConnection
+              valueFrom:
+                secretKeyRef:
+                  key: db-connstr
+                  name: #{DockerNameCKD}-config 
+            - name: ConnectionStrings__AzureServiceBus
+              valueFrom:
+                secretKeyRef:
+                  key: asb-connstr
+                  name: #{DockerNameCKD}-config
+            - name: Okta__ClientId
+              value: #{OktaClientIdCKD}
+            - name: Okta__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: #{DockerNameCKD}-config  
+          livenessProbe: # alternately startupProbe or readinessProbe
+            httpGet:
+              path: "/health/live/"
+              port: 5051
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 6
+          resources:
+            requests:
+              cpu: #{ResourceRequest:Cpu} # Set to 100m
+              memory: #{ResourceRequest:Memory} # Set to 250M
+            limits:
+              cpu: #{ResourceLimit:Cpu} # Set to 500m
+              memory: #{ResourceLimit:Memory} # Set to 500M
+          volumeMounts:
+            - name: particular
+              mountPath: /usr/share/ParticularSoftware
+              readOnly: true
+            - name: ca-pemstore
+              mountPath: /etc/ssl/certs/censeoca01-root.pem
+              subPath: censeoca01-root.pem
+              readOnly: true
+      volumes:
+        - name: particular
+          secret:
+            secretName: particular
+        - name: ca-pemstore
+          secret:
+            secretName: ca-pemstore
+

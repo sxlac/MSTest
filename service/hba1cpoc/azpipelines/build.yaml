@@ -1,0 +1,58 @@
+trigger:
+  batch: "true"
+  paths:
+    include:
+      - service/hba1cpoc/*
+    exclude:
+      - service/hba1cpoc/docs/*
+      - service/hba1cpoc/flyway/*
+      - service/hba1cpoc/tf/*
+      - service/hba1cpoc/catalog-info.yaml
+      - service/hba1cpoc/mkdocs.yaml
+      - service/hba1cpoc/readme.md
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+variables:
+  - group: azuredevops
+  - group: dps-shared-all
+  - name: rootFolder
+    value: 'service'
+  - name: appName
+    value: 'hba1cpoc'
+  - name: pipelineFolder
+    value: 'azpipelines'
+  - name: Sln
+    value: 'Signify.HBA1CPOC.Svc.sln'
+  - name: projectName
+    value: 'signify-hba1cpoc-svc'
+
+stages:
+  - template: stagetemplates/dotnet-docker.yaml@templates
+    parameters:
+      coreVersion: 8.0.x
+      gitVersionFile: $(rootFolder)/$(appName)/GitVersion.yml
+      dockerComposeFile: $(rootFolder)/$(appName)/docker-compose.yaml
+      dockerComposeService: signify-hba1cpoc-svc
+      kubernetesManifest: $(rootFolder)/$(appName)/k8s/deployment.yaml
+      solutionPath: $(rootFolder)/$(appName)/src/$(Sln)
+      projectName: $(projectName)
+      dotNetTestArguments: --filter FullyQualifiedName!~Signify.HBA1CPOC.System.Tests
+      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
+          push: false
+      dockerCustomSteps:
+      # Adds a build tag from the full commit SHA of this build.
+      #
+      # This can be used to reference the precise build during deployment by
+      # other pipelines.
+      - task: Bash@3
+        displayName: 'Tag build'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[build.addbuildtag]$(Build.SourceVersion)"
+

@@ -1,0 +1,5 @@
+ALTER TABLE public."DEEBilling"
+ADD COLUMN "RcmProductCode" VARCHAR(32) NOT NULL DEFAULT 'DEE';
+
+ALTER TABLE public."DEEBilling"
+ALTER COLUMN "RcmProductCode" DROP DEFAULT;

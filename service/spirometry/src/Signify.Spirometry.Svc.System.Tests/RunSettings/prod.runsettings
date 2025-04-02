@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <TestRunParameters>
+		<Parameter name="env" value="prod" />
+		<Parameter name="AppointmentApiUrl" value="https://appointmentapi.signifyhealth.com" />
+        <Parameter name="CapacityApiUrl" value="https://coreapi.signifyhealth.com/capacity" />
+        <Parameter name="CdiApiUrl" value="https://cdi.signifyhealth.com/api" />
+        <Parameter name="CodingApiUrl" value="https://coding.signifyhealth.com/api" />
+        <Parameter name="EvaluationApiUrl" value="https://coreapi.signifyhealth.com/evaluation" />
+        <Parameter name="MemberApiUrl" value="https://coreapi.signifyhealth.com/member" />
+        <Parameter name="AvailabilityApiUrl" value="https://coreapi.signifyhealth.com/availability" />
+        <Parameter name="ProviderApiUrl" value="https://coreapi.signifyhealth.com/provider" />
+        <Parameter name="ProductApiUrl" value="https://coreapi.signifyhealth.com/product" />
+        <Parameter name="DataFactoryApiUrl" value="https://datafactory-api.uat.signifyhealth.com/api" />
+        <Parameter name="SchedulingApiUrl" value="https://coreapi.signifyhealth.com/scheduling" />
+        <Parameter name="Okta.Url" value="https://login.signifyhealth.com" />
+        <Parameter name="Okta.ClientId" value="" />
+        <Parameter name="Okta.RedirectUrl" value="https://coreapi.signifyhealth.com/evaluation/swagger/oauth2-redirect.html" />
+        <Parameter name="Okta.Scope" value="profile openid availabilityapi clientapi evaluationapi memberapi productapi capacityapi appointmentapi" />
+    </TestRunParameters>
+    <MSTest>
+        <Parallelize>
+            <Workers>10</Workers>
+            <Scope>MethodLevel</Scope>
+        </Parallelize>
+    </MSTest>
+    <LoggerRunSettings>
+        <Loggers>
+          <Logger friendlyName="console" enabled="True">
+            <Configuration>
+                <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="trx" enabled="True">
+            <Configuration>
+              <LogFileName>TestResults.trx</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="junit" enabled="True">
+            <Configuration>
+              <LogFileName>TestResultsJunit.xml</LogFileName>
+              <Verbosity>detailed</Verbosity>
+            </Configuration>
+          </Logger>
+          <Logger friendlyName="xunit" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsXunit.xml</LogFileName>
+                <Verbosity>detailed</Verbosity>
+              </Configuration>
+          </Logger>
+          <Logger friendlyName="html" enabled="True">
+              <Configuration>
+                <LogFileName>TestResultsHtml.html</LogFileName>
+              </Configuration>
+          </Logger>
+        </Loggers>
+    </LoggerRunSettings>
+</RunSettings>

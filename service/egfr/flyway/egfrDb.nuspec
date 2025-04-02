@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>egfr.Database</id>
+    <version>$version$</version>
+	  <authors>Signify Health</authors>
+    <title>egfr Database</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>egfr Database</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2022</copyright>
+  </metadata>
+  <files>
+	  <file src="flyway\**\*.*" target="flyway" />
+  </files>
+</package>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DpsOps.Core\DpsOps.Core.csproj" />
+    </ItemGroup>
+
+    <Target Name="CopyInstructionsOnPublish" AfterTargets="Publish">
+        <Copy SourceFiles="Instructions.txt" DestinationFolder="$(PublishDir)" />
+    </Target>
+
+</Project>

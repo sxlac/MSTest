@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <TestRunParameters>
+        <Parameter name="env" value="prod" />
+        <Parameter name="RancherApiUrl" value="https://rancher.signifyhealth.com" />
+        <Parameter name="ClusterId" value="c-sxz64" />
+        <Parameter name="NameSpace" value="uacr" />
+    </TestRunParameters>
+    <LoggerRunSettings>
+        <Loggers>
+            <Logger friendlyName="junit" enabled="True">
+                <Configuration>
+                    <LogFileName>TestResultsJunit.xml</LogFileName>
+                    <Verbosity>detailed</Verbosity>
+                </Configuration>
+            </Logger>
+        </Loggers>
+    </LoggerRunSettings>
+</RunSettings>

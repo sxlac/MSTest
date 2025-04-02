@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <TargetFramework>net8.0</TargetFramework>
+        <Authors>DPSI QE</Authors>
+        <Copyright>Signify Health</Copyright>
+        <Configurations>Debug;Release;Test</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Faker.Net" Version="2.0.154" />
+        <PackageReference Include="Signify.QE.MemberApi.WebApi.Library" Version="1.5.1291" />
+        <PackageReference Include="SSH.NET" Version="2024.0.0" />
+        <PackageReference Include="NServiceBus" Version="8.1.6" /> <!-- Added to avoid version conflict with Signify.EvaluationsApi.Core -->
+        <PackageReference Include="Signify.QE.Core.Authentication" Version="3.0.0" />
+        <PackageReference Include="Signify.QE.MSTest" Version="1.0.1" />
+        <PackageReference Include="Signify.QE.Core.Utilities" Version="2.0.0" />
+        <PackageReference Include="Signify.Dps.Test.Utilities" Version="4.1.0" />
+        <PackageReference Include="Refit" Version="8.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.Spirometry.Svc\Signify.Spirometry.Svc.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.coverage.exclusions">
+            <Value>**/*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+</Project>

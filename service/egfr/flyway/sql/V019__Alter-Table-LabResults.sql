@@ -1,0 +1,2 @@
+ALTER TABLE public."LabResult"
+ALTER COLUMN "EgfrResult" TYPE NUMERIC(10,3);

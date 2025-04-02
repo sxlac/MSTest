@@ -1,0 +1,3 @@
+site_name: "FOBT Process Manager"
+plugins:
+  - techdocs-core

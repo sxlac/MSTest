@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="5.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="5.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.11" />
+        <PackageReference Include="NServiceBus" Version="7.5.0" />
+        <PackageReference Include="NServiceBus.Extensions.DependencyInjection" Version="1.0.1" />
+        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.3.0" />
+        <PackageReference Include="NServiceBus.Persistence.Sql" Version="6.2.1" />
+        <PackageReference Include="NServiceBus.Serilog" Version="7.16.0" />
+        <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="2.0.1" />
+        <PackageReference Include="Refit" Version="6.1.15" />
+        <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="6.1.15" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
+        <PackageReference Include="StackExchange.Redis" Version="2.2.79" />
+        <PackageReference Include="Signify.AkkaStreams.Postgres" Version="4.1.2" />
+        <PackageReference Include="Signify.AkkaStreams.Kafka.DependencyInjection" Version="4.1.2" />
+        <PackageReference Include="Signify.GenericHost.Diagnostics.HealthChecks" Version="1.0.0" />
+        <PackageReference Include="Signify.GenericHost.Diagnostics.HealthChecks.DependencyInjection" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.A1C.Svc.Core\Signify.A1C.Svc.Core.csproj" />
+    </ItemGroup>
+
+</Project>

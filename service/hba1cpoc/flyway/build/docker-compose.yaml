@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  flyway:
+    image: redgate/flyway
+    volumes:
+      - "../sql:/flyway/sql"
+      - "./flyway.conf:/flyway/conf/flyway.conf"
+
+  db:
+    image: signifyhealth.azurecr.io/hba1cpoc-db:${DB_IMAGE_TAG:-latest}
+    container_name: hba1cpoc-db
+    build: .
+    ports:
+      - "5432:5432"

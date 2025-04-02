@@ -1,0 +1,53 @@
+parameters:
+  - name: envVars
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: OKTA_CLIENT_ID
+        value: $(OKTA_CLIENT_ID)
+      - name: PAD_DB_USERNAME
+        value: $(PAD_DB_USERNAME)
+      - name: PAD_DB_PASSWORD
+        value: $(PAD_DB_PASSWORD)
+      - name: PAD_DB_HOST
+        value: $(PAD_DB_HOST)
+      - name: LD_SDK_KEY
+        value: $(LD_SDK_KEY)
+      - name: LD_USER_KEY
+        value: $(LD_USER_KEY)
+      - name: LD_USERNAME
+        value: $(LD_USERNAME)
+      - name: SERVICE
+        value: pad
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests/RunSettings/prod.runsettings
+  - name: testCycleName
+    type: string
+    default: 'Test Automation Run for Commit : $(Build.SourceVersion) (PAD)-PROD'
+  - name: flyway
+    type: boolean
+    default: false
+  - name: waveform
+    type: boolean
+    default: false
+
+jobs:
+  - template: jobtemplates/dotnet-system-tests.yaml@templates
+    parameters:
+      createTestCycle: true
+      ${{ if eq(parameters.flyway, true) }}:
+        dotNetTestArguments: '-s ${{parameters.runSettingsFilePath}} --logger:"junit;LogFilePath=TestResults/TestResultsJunit.xml" --logger:"console;verbosity=detailed" --filter "TestCategory=prod_smoke|TestCategory=database"'
+      ${{else}}:
+        dotNetTestArguments: '-s ${{parameters.runSettingsFilePath}} --logger:"junit;LogFilePath=TestResults/TestResultsJunit.xml" --logger:"console;verbosity=detailed" --filter "TestCategory=prod_smoke"'
+      jiraProjectKey: 'ANC'
+      testResultDir: $(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests
+      csprojPath: $(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests/Signify.PAD.Svc.System.Tests.csproj
+      envVariables: ${{ parameters.envVars }}
+      testCycleName: ${{ parameters.testCycleName }}
+...

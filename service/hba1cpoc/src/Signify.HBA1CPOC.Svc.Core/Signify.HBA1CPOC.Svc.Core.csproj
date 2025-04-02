@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
+      <PackageReference Include="FluentResults" Version="3.16.0" />
+      <PackageReference Include="FluentValidation" Version="11.11.0" />
+      <PackageReference Include="LaunchDarkly.ServerSdk" Version="8.6.0" />
+      <PackageReference Include="MediatR" Version="12.4.1" />
+      <PackageReference Include="Microsoft.Csharp" Version="4.7.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+      <PackageReference Include="NewRelic.Agent.Api" Version="10.34.1" />
+      <PackageReference Include="Npgsql" Version="8.0.3" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+      <PackageReference Include="NServiceBus" Version="9.2.3" />
+      <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="3.0.0" />
+      <PackageReference Include="NServiceBus.Persistence.Sql" Version="7.0.4" />
+      <PackageReference Include="Polly" Version="8.5.1" />
+      <PackageReference Include="Refit" Version="8.0.0" />
+      <PackageReference Include="Signify.AkkaStreams.Kafka" Version="4.2.4" />
+      <PackageReference Include="Signify.AkkaStreams.Postgres" Version="4.2.4" />
+      <PackageReference Include="Signify.Okta.Messages" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Signify.HBA1CPOC.Messages\Signify.HBA1CPOC.Messages.csproj" />
+    </ItemGroup>
+
+</Project>

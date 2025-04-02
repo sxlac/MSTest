@@ -1,0 +1,15 @@
+host_name = "sh-qa-usc-postgresql-01"
+host_postfix = ".azure.qa.signifyhealth.com"
+user_name = "a1csvc"
+app_name = "Signify.A1C.Svc"
+database_name = "a1c"
+//kafka_servers = ["kafka.qa.signifyhealth.com:31090","kafka.qa.signifyhealth.com:31091","kafka.qa.signifyhealth.com:31092"]
+//kafka_retentionms = 172800000
+//kafka_topic = "servicesample_sampletopic"
+k8s_cluster = "qa-usc-shared-aks"
+k8s_ns = "ancillary"
+okta_url          = "oktapreview.com"
+okta_app_name  = "A1C_Service_QA"
+asb_namespace = "sh-qa-usc-servicebus"
+asb_resourcegroup = "sh-qa-usc-servicebus-rg"
+asb_rulename = "a1cSvcAccessKey"

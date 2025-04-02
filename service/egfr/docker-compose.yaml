@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  egfrsvc:
+    image: signifyhealth.azurecr.io/signify-egfr-svc:${TAG}
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    ports:
+      - '5000:5000'
+    build:
+      context: ./src
+      #path to Dockerfile is relative to the context path set above
+      dockerfile: ./Signify.eGFR.Svc/Dockerfile
+      args:
+        PROJECT_NAME: Signify.eGFR.Svc

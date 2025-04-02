@@ -1,0 +1,30 @@
+@startuml ContextDiagram
+!includeurl https://raw.githubusercontent.com/scarrier/C4-PlantUML/latest/C4_Context.puml
+
+title CKD Context Diagram
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_LEFT_RIGHT()
+'LAYOUT_AS_SKETCH()
+
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 10
+
+LAYOUT_WITH_LEGEND()
+
+Person(provider, "Provider", "Performs HRE Assessment", "y")
+System_Ext(Evaluations, "Evaluations")
+System_Ext(Inventory, "Inventory System")
+System_Ext(BillingSystem, "Billing System")
+System(CKDProcessManager, "CKD Process Manager")
+
+Rel_R(provider, Evaluations, "Sends evaluations to")
+Rel_Neighbor(Evaluations, CKDProcessManager, "notifies")
+Rel_Down(CKDProcessManager, BillingSystem, "Recognize revenue using")
+
+Rel_Neighbor(CKDProcessManager, Inventory, "Decrements lab inventory using")
+
+
+
+
+@enduml

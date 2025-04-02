@@ -1,0 +1,5 @@
+variables:
+  EnvironmentName: PROD
+  ImagePullPolicy: Always
+  vssPath: ancillary/signify-dee-svc/kafka/svc-consumer-dee-prod
+  vssMount: prd-usc-shared-aks

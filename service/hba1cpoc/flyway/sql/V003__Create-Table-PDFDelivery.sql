@@ -1,0 +1,14 @@
+CREATE TABLE "PDFToClient"
+(
+    "PDFDeliverId" SERIAL PRIMARY KEY,
+    "EventId" VARCHAR(40),
+    "EvaluationId" BIGINT NOT NULL,
+    "DeliveryDateTime" TIMESTAMP WITH TIME ZONE,
+    "DeliveryCreatedDateTime" TIMESTAMP WITH TIME ZONE,
+    "BatchId" BIGINT NOT NULL,
+    "BatchName" VARCHAR(200),
+    "HBA1CPOCId" INTEGER NOT NULL REFERENCES "HBA1CPOC"("HBA1CPOCId"),
+    "CreatedDateTime" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 
+
+INSERT INTO "HBA1CPOCStatusCode" ("HBA1CPOCStatusCodeId", "StatusCode") VALUES  (6, 'BillableEventRecieved');

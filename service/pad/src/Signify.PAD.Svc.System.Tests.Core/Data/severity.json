@@ -1,0 +1,52 @@
+[
+  {
+    "leftValue": "1",
+    "rightValue": "1.4",
+    "leftNormality": "N",
+    "rightNormality": "N",
+    "lSeverity": "Normal",
+    "rSeverity": "Normal",
+    "leftAnswerResult": 31042,
+    "rightAnswerResult": 31047
+  },
+  {
+    "leftValue": "0.9",
+    "rightValue": "0.99",
+    "leftNormality": "N",
+    "rightNormality": "N",
+    "lSeverity": "Borderline",
+    "rSeverity": "Borderline",
+    "leftAnswerResult": 31043,
+    "rightAnswerResult": 31048
+  },
+  {
+    "leftValue": "0.6",
+    "rightValue": "0.89",
+    "leftNormality": "A",
+    "rightNormality": "A",
+    "lSeverity": "Mild",
+    "rSeverity": "Mild",
+    "leftAnswerResult": 31044,
+    "rightAnswerResult": 31049
+  },
+  {
+    "leftValue": "0.3",
+    "rightValue": "0.59",
+    "leftNormality": "A",
+    "rightNormality": "A",
+    "lSeverity": "Moderate",
+    "rSeverity": "Moderate",
+    "leftAnswerResult": 31045,
+    "rightAnswerResult": 31050
+  },
+  {
+    "leftValue": "0",
+    "rightValue": "0.29",
+    "leftNormality": "A",
+    "rightNormality": "A",
+    "lSeverity": "Severe",
+    "rSeverity": "Severe",
+    "leftAnswerResult": 31046,
+    "rightAnswerResult": 31051 
+  }
+]

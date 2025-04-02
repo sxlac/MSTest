@@ -1,0 +1,65 @@
+@startuml spirometry-context-diagram
+
+Title Spirometry Context Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+AddElementTag("3rdPartyApplication", $bgColor="#0080ff", $fontColor="#ffffff", $legendText="third party application")
+AddElementTag("device", $bgColor="#00cc66", $fontColor="#ffffff", $legendText="device")
+
+Person(provider, "Provider")
+Person(member, "Member")
+
+System_Ext(spirometer, "Spirometer", $tags="device")
+
+Person_Ext(pulmonologist, "Pulmonologist")
+
+System_Ext(nuvo, "NuvoAir", $tags="3rdParty")
+System_Ext(airmd, "NuvoAir AirMD\n(iOS App)", "Insufficient quality tests are sent to a pulmonologist for review ('overread')", $tags="3rdPartyApplication")
+
+Enterprise_Boundary(sh, "Signify") {
+    System_Ext(cc, "Care Consult\n(iPad/Mobile)")
+    System_Ext(evaluation, "Evaluation System")
+    System_Ext(appointment, "Appointment System")
+    System_Ext(provider_sys, "Provider System")
+    System_Ext(member_sys, "Member System")
+    System(pm, "Spirometry System")
+    System_Ext(labs, "Labs System")
+    System_Ext(cdi, "CDI System")
+    System_Ext(pdf, "PDF Delivery System")
+    System_Ext(rcm, "RCM System")
+    System_Ext(pp, "Provider Pay System")
+}
+
+Rel(member, spirometer, "Conducts spirometry test")
+Rel(spirometer, airmd, "Spirometry data sent to", "Bluetooth")
+
+Rel(cc, airmd, "Sends appointment data to", "Deeplink")
+Rel_Up(airmd, cc, "Sends spirometry test data to", "Deeplink")
+Rel(airmd, nuvo, "")
+Rel(pulmonologist, nuvo, "Performs overread")
+Rel(nuvo, labs, "Sends overread results to", "HTTPS")
+Rel(pm, labs, "Receives overread results from", "TCP")
+
+Rel(provider, cc, "Performs evaluation")
+Rel(cc, evaluation, "Sends evaluation answers & finalizes evaluation", "HTTPS")
+Rel(evaluation, pm, "Sends evaluation events to", "TCP")
+
+Rel(pm, evaluation, "Queries evaluation data from", "HTTPS")
+Rel(pm, appointment, "Queries appointment data from", "HTTPS")
+Rel(pm, provider_sys, "Queries provider data from", "HTTPS")
+Rel(pm, member_sys, "Queries member data from", "HTTPS")
+
+Rel(pm, cdi, "Receives evaluation hold events from", "TCP")
+Rel(pm, cdi, "Creates system flags & releases holds", "HTTPS")
+
+Rel(pdf, pm, "Sends pdf delivery events to", "TCP")
+
+Rel(pm, rcm, "Sends billing requests to", "HTTPS")
+Rel(pm, rcm, "Receives billing events from", "TCP")
+Rel(pm, pp, "Sends provider pay requests to", "HTTPS")
+
+SHOW_LEGEND()
+
+@enduml

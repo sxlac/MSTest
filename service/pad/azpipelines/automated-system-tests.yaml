@@ -1,0 +1,120 @@
+parameters:
+  - name: envVars
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: KAFKA_PASSWORD
+        value: $(KAFKA_PASSWORD)
+      - name: KAFKA_USERNAME
+        value: $(KAFKA_USERNAME)
+      - name: KAFKA_PUB_PASSWORD
+        value: $(KAFKA_PUB_PASSWORD)
+      - name: KAFKA_PUB_USERNAME
+        value: $(KAFKA_PUB_USERNAME)
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: $(KAFKA_BOOTSTRAP_SERVERS)
+      - name: KAFKA_GROUP_ID
+        value: $(KAFKA_GROUP_ID)
+      - name: PAD_DB_USERNAME
+        value: $(PAD_DB_USERNAME)
+      - name: PAD_DB_PASSWORD
+        value: $(PAD_DB_PASSWORD)
+      - name: PAD_DB_HOST
+        value: $(PAD_DB_HOST)
+      - name: SMB_USERNAME
+        value: $(SMB_USERNAME)
+      - name: SMB_PASSWORD
+        value: $(SMB_PASSWORD)
+      - name: LD_SDK_KEY
+        value: $(LD_SDK_KEY)
+      - name: LD_USER_KEY
+        value: $(LD_USER_KEY)
+      - name: LD_USERNAME
+        value: $(LD_USERNAME)
+      - name: SERVICE
+        value: pad
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests/RunSettings/uat.runsettings
+  - name: testCycleName
+    type: string
+    default: 'Test Automation Run for Commit : $(Build.SourceVersion) (PAD)'
+  - name: mountLocation
+    type: string
+    default: $(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests
+  - name: dotnetVersion
+    type: string
+    default: '8.0.x'
+  - name: flyway
+    type: boolean
+    default: false
+  - name: waveform
+    type: boolean
+    default: false
+
+jobs:
+  - job: Dotnet_System_Tests
+    displayName: Dotnet.System.Tests
+    pool: uat-linux-test
+    variables:
+      - group: qe-common-zephyr
+      - name: testFilter
+        ${{ if eq(parameters.flyway, true) }}:
+          value: '"TestCategory=regression|TestCategory=database"'
+        ${{else}}:
+          value: '"TestCategory=regression"'
+      - name: waveformTestFilter
+        ${{ if eq(parameters.waveform, true) }}:
+          value: '${{variables.testFilter}}|TestCategory=waveform'
+        ${{else}}:
+          value: '${{variables.testFilter}}'
+    steps:
+      - checkout: self
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '${{ parameters.dotnetVersion }}'
+      - ${{ if eq(parameters.waveform, true) }}:
+        - task: Bash@3
+          name: File_Mount
+          displayName: Mount FileShare
+          inputs:
+            targetType: inline
+            script: >-
+              mkdir -p file_mount &&
+              mount -t cifs '//censeohealth.com/dfs$/Private/DPS/UAT/PAD/VendorResults' file_mount -o user=$(SMB_USERNAME) -o password=$(SMB_PASSWORD)
+            workingDirectory: ${{ parameters.mountLocation }}
+      - task: DotNetCoreCLI@2
+        displayName: dotnet test
+        inputs:
+          command: test
+          projects: $(Build.SourcesDirectory)/$(Build.Repository.Name)/service/pad/src/Signify.PAD.Svc.System.Tests/Signify.PAD.Svc.System.Tests.csproj
+          arguments: '--configuration Test -s ${{parameters.runSettingsFilePath}} --logger:"console;verbosity=detailed" --filter ${{variables.waveformTestFilter}}'
+          publishTestResults: true
+          nobuild: false
+        env:
+          ${{ each envVariable in parameters.envVars }}:
+            ${{ envVariable.name }}: ${{ envVariable.value }}
+      - ${{ if eq(parameters.waveform, true) }}:
+        - task: Bash@3
+          name: File_Unmount
+          condition: always()
+          displayName: Unmount FileShare
+          inputs:
+            targetType: inline
+            script: >-
+              umount file_mount
+            workingDirectory: ${{ parameters.mountLocation }}
+      - template: steptemplates/zephyr-create-test-cycle.yaml@templates
+        parameters:
+          zephyrApiUrl: '$(ZEPHYR_API_URL)ANC'
+          zephyrApiToken: $(ZEPHYR_API_TOKEN)
+          testResultsFilePath: '$(Agent.TempDirectory)/*.trx'
+          jiraProjectKey: 'ANC'
+          testCycleName: ${{ parameters.testCycleName }}
+...

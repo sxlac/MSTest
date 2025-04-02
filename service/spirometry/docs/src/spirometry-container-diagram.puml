@@ -1,0 +1,64 @@
+@startuml spirometry-context-diagram
+
+Title Spirometry Container Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+
+System_Ext(asb, "Azure Service Bus", "Backing for NServiceBus")
+
+Enterprise_Boundary(sh, "Signify") {
+    Container_Ext(evaluation, "Evaluation API", ".NET Web API", "Produces evaluation events and provides form questions & answers the provider entered during the IHE")
+    Container_Ext(appointment, "Appointment API", ".NET Web API", "Provides appointment information, used to determine which US state the evaluation was conducted in (for billing requirements), and determining which evaluation an overread corresponds to when received from NuvoAir")
+    Container_Ext(provider, "Provider API", ".NET Web API", "Provides provider information, used to determine which provider to pay when a clinically valid spirometry test was performed")
+    Container_Ext(member, "Member API", ".NET Web API", "Provides member information")
+    System_Ext(cdi, "CDI API", "[.NET Framework]\n\nEvaluations with Spirometry attached are put on 'hold' (not sent to the CDI queue), until either the hold expires or is released. While the hold is in effect, CDI can receive a 'system flag', which would be surfaced to the provider as part of a clarification to assert a diagnosis of COPD.")
+    Container_Ext(rcm, "RCM API", ".NET Web API", "")
+    Container_Ext(pp, "Provider Pay API", ".NET Web API", "")
+
+    System_Boundary(spiro_system, "Spirometry System") {
+        Container(pm, "Spirometry Process Manager", ".NET 8 Worker Service", "Orchestrates Spirometry product workflows for finalized evaluations which have the Spirometry product code attached")
+        ContainerDb(db, "Spirometry DB", "PostgreSQL", "Stores evaluations, spirometry exam data, statuses, billing requests, provider pay requests, etc")
+    }
+
+    System_Boundary(kafka, "Kafka System") {
+        SystemQueue_Ext(q_evaluation, "Evaluation Events", "[evaluation]")
+        SystemQueue_Ext(q_pdfdelivery, "PDF Delivery Events", "[pdfdelivery]")
+        SystemQueue(q_overreads, "Overread Events", "[overread_spirometry]")
+        SystemQueue_Ext(q_holds, "Evaluation Hold Events", "[cdi_holds]")
+        SystemQueue_Ext(q_cdi, "CDI Events", "[cdi_events]")
+        SystemQueue_Ext(q_bills, "Billing Events", "[rcm_bill]")
+        SystemQueue(q_spiro_status, "Spirometry Status Events", "[spirometry_status]\n\nIngested into Snowflake for reporting and letter generation")
+        SystemQueue(q_spiro_results, "Spirometry Result Events", "[spirometry_result]\n\nIngested into Snowflake for reporting and letter generation")
+    }
+}
+
+BiRel_Left(pm, asb, "Enqueues/dequeues events to be processed", "AMQP :443")
+Rel(pm, db, "Reads/writes data to/from", "TCP :5432")
+
+Rel(pm, q_overreads, "Consumes", "TCP :9092")
+
+Rel_Up(pm, q_evaluation, "Consumes", "TCP :9092")
+
+Rel(pm, evaluation, "Queries", "HTTPS :443")
+Rel(pm, appointment, "Queries", "HTTPS :443")
+Rel(pm, provider, "Queries", "HTTPS :443")
+Rel(pm, member, "Queries", "HTTPS :443")
+
+Rel_Up(pm, q_holds, "Consumes", "TCP :9092")
+Rel_Up(pm, q_cdi, "Consumes", "TCP :9092")
+Rel(pm, cdi, "Creates system flags & releases holds", "HTTPS :443")
+
+Rel_Up(pm, q_pdfdelivery, "Consumes", "TCP :9092")
+
+Rel(pm, rcm, "Sends billing requests to", "HTTPS :443")
+Rel_Up(pm, q_bills, "Consumes", "TCP :9092")
+Rel(pm, pp, "Sends provider pay requests to", "HTTPS :443")
+
+Rel(pm, q_spiro_status, "Publishes spirometry status events to", "TCP :9092")
+Rel(pm, q_spiro_results, "Publishes spirometry test results to", "TCP :9092")
+
+SHOW_LEGEND()
+
+@enduml

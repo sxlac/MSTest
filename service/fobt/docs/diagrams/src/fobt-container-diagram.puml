@@ -1,0 +1,68 @@
+@startuml fobt-container-diagram
+
+Title FOBT Container Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddElementTag("3rdParty", $bgColor="#f6685e", $fontColor="#ffffff", $legendText="third party system")
+
+System_Ext(asb, "Azure Service Bus", "Backing for NServiceBus")
+
+Enterprise_Boundary(sh, "Signify") {
+    Container_Ext(evaluation, "Evaluation API", ".NET Web API", "Produces evaluation events and provides form questions & answers the provider entered during the IHE")
+    Container_Ext(appointment, "Appointment API", ".NET Web API", "Provides appointment information, used to determine which US state the evaluation was conducted in (for billing requirements)")
+    Container_Ext(provider, "Provider API", ".NET Web API", "Provides provider information, used to determine which provider to pay when an FOBT kit is left behind with the member and if clinically valid lab results are received")
+    Container_Ext(member, "Member API", ".NET Web API", "Provides member information")
+    Container_Ext(rcm, "RCM API", ".NET Web API", "")
+    Container_Ext(pp, "Provider Pay API", ".NET Web API", "")
+
+    System_Boundary(fobt_system, "FOBT System") {
+        Container(pm, "FOBT Process Manager", ".NET 8 Worker Service", "Orchestrates FOBT product workflows for finalized evaluations which have the FOBT product code attached")
+        ContainerDb(db, "FOBT DB", "PostgreSQL", "Stores evaluations, lab data, statuses, billing requests, provider pay requests, etc")
+    }
+
+    Container_Ext(labs_api, "Labs API", ".NET Web API", "")
+
+    System_Boundary(kafka, "Kafka System") {
+        SystemQueue_Ext(q_evaluation, "Evaluation Events", "[evaluation]")
+        SystemQueue_Ext(q_pdfdelivery, "PDF Delivery Events", "[pdfdelivery]")
+        SystemQueue_Ext(q_barcode, "Barcode Update Events", "[labs_barcode]")
+        SystemQueue_Ext(q_holds, "Lab Order Hold Events", "[labs_holds]")
+        SystemQueue_Ext(q_lab_results, "Lab Result Events", "[homeaccess_labresults]")
+        SystemQueue_Ext(q_cdi, "CDI Events", "[cdi_events]")
+        SystemQueue_Ext(q_bills, "Billing Events", "[rcm_bill]")
+        SystemQueue(q_fobt_status, "FOBT Status Events", "[FOBT_Status]\n\nIngested into Snowflake for reporting and letter generation, as well as lab order holds to sometimes be sent to MEC's (via SalesForce) for member outreach")
+        SystemQueue(q_fobt_results, "FOBT Result Events", "[FOBT_Results]\n\nIngested into Snowflake for reporting and letter generation")
+    }
+}
+
+BiRel_Left(pm, asb, "Enqueues/dequeues events to be processed", "AMQP :443")
+Rel(pm, db, "Reads/writes data to/from", "TCP :5432")
+
+Rel(q_evaluation, pm, "Consumes", "TCP :9092")
+
+Rel(pm, evaluation, "Queries", "HTTPS :443")
+Rel(pm, appointment, "Queries", "HTTPS :443")
+Rel(pm, provider, "Queries", "HTTPS :443")
+Rel(pm, member, "Queries", "HTTPS :443")
+
+Rel(pm, labs_api, "Sends lab order creation requests to", "HTTPS :443")
+
+Rel(q_barcode, pm, "Consumes", "TCP :9092")
+Rel(q_holds, pm, "Consumes", "TCP :9092")
+Rel(q_lab_results, pm, "Consumes", "TCP :9092")
+
+Rel(q_cdi, pm, "Consumes", "TCP :9092")
+
+Rel(q_pdfdelivery, pm, "Consumes", "TCP :9092")
+
+Rel(pm, rcm, "Sends billing requests to", "HTTPS :443")
+Rel(q_bills, pm, "Consumes", "TCP :9092")
+Rel(pm, pp, "Sends provider pay requests to", "HTTPS :443")
+
+Rel(pm, q_fobt_status, "Publishes FOBT status events to", "TCP :9092")
+Rel(pm, q_fobt_results, "Publishes FOBT test results to", "TCP :9092")
+
+SHOW_LEGEND()
+
+@enduml

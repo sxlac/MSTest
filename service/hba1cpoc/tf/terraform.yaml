@@ -1,0 +1,51 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - feature/*
+      - release/*
+      - master
+  paths:
+    include:
+      - /services/hba1cpoc/tf/*
+    exclude:
+      - /service/hba1cpoc/tf/shared/*
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: HCC/templates
+
+pool:
+  name: $(azdo-linux-agent-pool)
+
+parameters:
+  - name: destroy
+    displayName: Destroy Infrastructure
+    type: boolean
+    default: false
+  - name: environment
+    displayName: Deployment environments
+    type: object
+    default:
+      - DEV
+      - QA
+      - UAT
+      - PROD
+
+stages:
+  - ${{ each env in parameters.environment }}:
+      - template: stagetemplates/terraform.yaml@templates
+        parameters:
+          environment: ${{ env }}
+          destroy: ${{ parameters.destroy }}
+          terraformFolder: "service/hba1cpoc/tf/"
+          terraformVersion: 1.5.0
+          variableGroups:
+            - ${{ if in(env, 'DEV', 'QA', 'UAT') }}:
+                - terraform-okta-preprod
+            - ${{ else }}:
+                - terraform-okta-prod
+            - terraform-confluent-cloud
+            - terraform-confluent-kafka-${{ env }}

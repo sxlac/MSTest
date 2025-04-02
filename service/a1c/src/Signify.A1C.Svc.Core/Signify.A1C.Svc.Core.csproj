@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Extensions\**" />
+        <Compile Remove="Messages\**" />
+        <EmbeddedResource Remove="Extensions\**" />
+        <EmbeddedResource Remove="Messages\**" />
+        <None Remove="Extensions\**" />
+        <None Remove="Messages\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="EventHandlers\BarcodeUpdateRecievedHandler.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="FluentResults" Version="2.6.0" />
+        <PackageReference Include="mediatr" Version="9.0.0" />
+        <PackageReference Include="microsoft.csharp" Version="4.7.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.11">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+        <PackageReference Include="Npgsql" Version="5.0.10" />
+        <PackageReference Include="NewRelic.Agent.Api" Version="9.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+        <PackageReference Include="NServiceBus" Version="7.5.0" />
+        <PackageReference Include="NServiceBus.Extensions.DependencyInjection" Version="1.0.1" />
+        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.3.0" />
+        <PackageReference Include="NServiceBus.Persistence.Sql" Version="6.2.1" />
+        <PackageReference Include="NServiceBus.Serilog" Version="7.16.0" />
+        <PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="2.0.1" />
+        <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+        <PackageReference Include="Polly" Version="7.2.2" />
+        <PackageReference Include="Refit" Version="6.1.15" />
+        <PackageReference Include="Refit.Newtonsoft.Json" Version="6.1.15" />
+        <PackageReference Include="Signify.Okta.Messages" Version="0.1.12" />
+        <PackageReference Include="StackExchange.Redis" Version="2.2.79" />
+        <PackageReference Include="System.Text.Json" Version="5.0.2" />
+        <PackageReference Include="Signify.AkkaStreams.Kafka" Version="3.0.0" />
+        <PackageReference Include="Signify.AkkaStreams.Postgres" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Signify.A1C.Messages\Signify.A1C.Messages.csproj" />
+    </ItemGroup>
+
+</Project>

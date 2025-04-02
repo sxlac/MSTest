@@ -1,0 +1,5 @@
+variables:
+  EnvironmentName: UAT
+  ImagePullPolicy: Always
+  vssPath: global/serviceaccounts/kafka/kafka-global-sa-uat
+  vssMount: uat-usc-shared-aks

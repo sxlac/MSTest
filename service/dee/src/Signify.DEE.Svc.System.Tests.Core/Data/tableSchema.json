@@ -1,0 +1,539 @@
+{
+  "Exam": [
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DeeExamId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "YES",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "MemberPlanId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "ProviderId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DateOfService",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Gradeable",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "State",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "RequestId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "ClientId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ReceivedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ExamLocalId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "EvaluationObjectiveId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "AppointmentId",
+      "isNullable": "YES",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "RetinalImageTestingNotes",
+      "isNullable": "YES",
+      "dataType": "text"
+    },
+    {
+      "columnName": "HasEnucleation",
+      "isNullable": "YES",
+      "dataType": "bool"
+    }
+  ],
+  "ExamDiagnosis": [
+    {
+      "columnName": "ExamDiagnosisId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamResultId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Diagnosis",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    }
+  ],
+  "ExamFinding": [
+    {
+      "columnName": "ExamFindingId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamResultId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "LateralityCodeId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Finding",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NormalityIndicator",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    }
+  ],
+  "ExamImage": [
+    {
+      "columnName": "ExamImageId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DeeImageId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ImageQuality",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ImageType",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LateralityCodeId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Gradable",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "NotGradableReasons",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ImageLocalId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    }
+  ],
+  "ExamLateralityGrade": [
+    {
+      "columnName": "ExamLateralityGradeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "LateralityCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Gradable",
+      "isNullable": "NO",
+      "dataType": "bool"
+    }
+  ],
+  "ExamResult": [
+    {
+      "columnName": "ExamResultId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "GradableImage",
+      "isNullable": "NO",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "GraderFirstName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "GraderLastName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "GraderNpi",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "GraderTaxonomy",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "DateSigned",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CarePlan",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "NormalityIndicator",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "LeftEyeHasPathology",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "RightEyeHasPathology",
+      "isNullable": "YES",
+      "dataType": "bool"
+    }
+  ],
+  "ExamStatus": [
+    {
+      "columnName": "ExamStatusId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReceivedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ExamStatusCodeId",
+      "isNullable": "YES",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "DeeEventId",
+      "isNullable": "YES",
+      "dataType": "uuid"
+    }
+  ],
+  "ExamStatusCode": [
+    {
+      "columnName": "ExamStatusCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Name",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "DEEBilling": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "BillId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Accepted",
+      "isNullable": "YES",
+      "dataType": "bool"
+    },
+    {
+      "columnName": "AcceptedAt",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "RcmProductCode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "DeeNotPerformed": [
+    {
+      "columnName": "DeeNotPerformedId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int2"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "Notes",
+      "isNullable": "YES",
+      "dataType": "text"
+    }
+  ],
+  "PDFToClient": [
+    {
+      "columnName": "PDFDeliverId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "EventId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "DeliveryDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "DeliveryCreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "BatchId",
+      "isNullable": "NO",
+      "dataType": "int8"
+    },
+    {
+      "columnName": "BatchName",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ],
+  "ProviderPay": [
+    {
+      "columnName": "Id",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "PaymentId",
+      "isNullable": "YES",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "ExamId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ProviderPayProductCode",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "NotPerformedReason": [
+    {
+      "columnName": "NotPerformedReasonId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "AnswerId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Reason",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "NonGradableReason": [
+    {
+      "columnName": "NonGradableReasonId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExamLateralityGradeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Reason",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "LateralityCode": [
+    {
+      "columnName": "LateralityCodeId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "Name",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    },
+    {
+      "columnName": "Description",
+      "isNullable": "NO",
+      "dataType": "varchar"
+    }
+  ],
+  "Hold": [
+    {
+      "columnName": "HoldId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "CdiHoldId",
+      "isNullable": "NO",
+      "dataType": "uuid"
+    },
+    {
+      "columnName": "EvaluationId",
+      "isNullable": "NO",
+      "dataType": "int4"
+    },
+    {
+      "columnName": "ExpiresAt",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "HeldOnDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "SentAtDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "ReleasedDateTime",
+      "isNullable": "YES",
+      "dataType": "timestamptz"
+    },
+    {
+      "columnName": "CreatedDateTime",
+      "isNullable": "NO",
+      "dataType": "timestamptz"
+    }
+  ]
+}

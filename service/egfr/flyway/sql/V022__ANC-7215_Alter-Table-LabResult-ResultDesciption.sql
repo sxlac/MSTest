@@ -1,0 +1,1 @@
+ALTER TABLE public."LabResult" ALTER COLUMN "ResultDescription" TYPE text;

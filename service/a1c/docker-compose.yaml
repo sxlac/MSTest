@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  signify-a1c-svc:
+    image: signifyhealth.azurecr.io/signify-a1c-svc:${TAG}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - '5000:5000'
+    build:
+      context: ./src
+      #path to Dockerfile is relative to the context path set above
+      dockerfile: ./Signify.A1C.Svc/Dockerfile
+  
+  flyway:
+    image: flyway/flyway
+    command: -connectRetries=60 migrate
+    volumes:
+      - ./flyway/sql:/flyway/sql
+      - ./flyway/conf:/flyway/conf
+    depends_on:
+      - db
+
+  db:
+    restart: unless-stopped
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: a1csvc
+      POSTGRES_PASSWORD: abc123  
+      POSTGRES_DB: a1c    
+    volumes:
+      #- data-volume:/var/lib/postgresql/data
+      - ./init_db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+      

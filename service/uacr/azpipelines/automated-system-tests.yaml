@@ -1,0 +1,70 @@
+parameters:
+  - name: envVars
+    type: object
+    default:
+      - name: OKTA_PASSWORD
+        value: $(OKTA_PASSWORD)
+      - name: OKTA_USERNAME
+        value: $(OKTA_USERNAME)
+      - name: KAFKA_PASSWORD
+        value: $(KAFKA_PASSWORD)
+      - name: KAFKA_USERNAME
+        value: $(KAFKA_USERNAME)
+      - name: KAFKA_PUB_PASSWORD
+        value: $(KAFKA_PUB_PASSWORD)
+      - name: KAFKA_PUB_USERNAME
+        value: $(KAFKA_PUB_USERNAME)
+      - name: KAFKA_HOME_ACCESS_PUB_PASSWORD
+        value: $(KAFKA_HOME_ACCESS_PUB_PASSWORD)
+      - name: KAFKA_HOME_ACCESS_PUB_USERNAME
+        value: $(KAFKA_HOME_ACCESS_PUB_USERNAME)
+      - name: KAFKA_BOOTSTRAP_SERVERS
+        value: $(KAFKA_BOOTSTRAP_SERVERS)
+      - name: KAFKA_GROUP_ID
+        value: $(KAFKA_GROUP_ID)
+      - name: UACR_DB_USERNAME
+        value: $(PostgresUser)
+      - name: UACR_DB_PASSWORD
+        value: $(PostgresPassword)
+      - name: UACR_DB_HOST
+        value: $(UACR_DB_HOST)
+      - name: LD_SDK_KEY
+        value: $(LD_SDK_KEY)
+      - name: LD_USER_KEY
+        value: $(LD_USER_KEY)
+      - name: LD_USERNAME
+        value: $(LD_USERNAME)
+      - name: SMB_USERNAME
+        value: $(SMB_USERNAME)
+      - name: SMB_PASSWORD
+        value: $(SMB_PASSWORD)
+      - name: SERVICE
+        value: uacr
+      - name: DOTNET_CLI_HOME
+        value: '$(Agent.TempDirectory)'
+      - name: NEWRELIC_ACCOUNT_ID
+        value: $(NEWRELIC_ACCOUNT_ID)
+      - name: NEWRELIC_API_KEY
+        value: $(NEWRELIC_API_KEY)
+      - name: API_SECRET_KEY_LGC
+        value: $(API_SECRET_KEY_LGC)
+      - name: ILR_DB_HOST
+        value: $(ILR_DB_HOST)
+      - name: ILR_DB_USERNAME
+        value: $(ILR_DB_USERNAME)
+      - name: ILR_DB_PASSWORD
+        value: $(ILR_DB_PASSWORD)
+  - name: runSettingsFilePath
+    type: string
+    default: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/RunSettings/uat.runsettings
+
+jobs:
+  - template: jobtemplates/dotnet-system-tests.yaml@templates
+    parameters:
+      createTestCycle: true
+      dotNetTestArguments: '-s ${{parameters.runSettingsFilePath}} --logger:"junit;LogFilePath=TestResults/TestResultsJunit.xml" --logger:"console;verbosity=detailed" --filter $(testFilter)'
+      jiraProjectKey: 'ANC'
+      testResultDir: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/TestResults
+      csprojPath: $(Build.Repository.Name)/service/uacr/src/Signify.uACR.System.Tests/Signify.uACR.System.Tests.csproj
+      envVariables: ${{parameters.envVars}}
+      testCycleName: 'Test Automation Run for Commit : $(Build.SourceVersion) (uACR)'

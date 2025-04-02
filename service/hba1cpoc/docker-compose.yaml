@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  signify-hba1cpoc-svc:
+    image: signifyhealth.azurecr.io/signify-hba1cpoc-svc:${TAG}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - '5000:5000'
+    build:
+      context: ./src
+      #path to Dockerfile is relative to the context path set above
+      dockerfile: ./Signify.HBA1CPOC.Svc/Dockerfile   

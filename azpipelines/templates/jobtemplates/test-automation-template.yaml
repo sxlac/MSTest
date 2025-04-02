@@ -1,0 +1,145 @@
+parameters:
+  - name: dco_environment_variables
+    type: string
+    default: "-e OKTA_USERNAME=$(OKTA_USERNAME) 
+    -e OKTA_PASSWORD=$(OKTA_PASSWORD) 
+    -e KAFKA_USERNAME=$(KAFKA_USERNAME) 
+    -e KAFKA_PASSWORD=$(KAFKA_PASSWORD) 
+    -e KAFKA_BOOTSTRAP_SERVERS=$(KAFKA_BOOTSTRAP_SERVERS) 
+    -e KAFKA_GROUP_ID=$(KAFKA_GROUP_ID) 
+    -e KAFKA_PUB_USERNAME=$(KAFKA_PUB_USERNAME) 
+    -e KAFKA_PUB_PASSWORD=$(KAFKA_PUB_PASSWORD)
+    -e KAFKA_HOME_ACCESS_PUB_USERNAME=$(KAFKA_HOME_ACCESS_PUB_USERNAME) 
+    -e KAFKA_HOME_ACCESS_PUB_PASSWORD=$(KAFKA_HOME_ACCESS_PUB_PASSWORD) 
+    -e EGFR_DB_USERNAME=$(EGFR_DB_USERNAME)
+    -e EGFR_DB_PASSWORD=$(EGFR_DB_PASSWORD)
+    -e EGFR_DB_URL=$(EGFR_DB_URL)
+    -e UACR_DB_USERNAME=$(UACR_DB_USERNAME)
+    -e UACR_DB_PASSWORD=$(UACR_DB_PASSWORD)
+    -e UACR_DB_URL=$(UACR_DB_URL)
+    -e DEE_DB_USERNAME=$(DEE_DB_USERNAME)
+    -e DEE_DB_PASSWORD=$(DEE_DB_PASSWORD)
+    -e DEE_DB_URL=$(DEE_DB_URL)
+    -e FOBT_DB_USERNAME=$(FOBT_DB_USERNAME) 
+    -e FOBT_DB_PASSWORD=$(FOBT_DB_PASSWORD) 
+    -e FOBT_DB_URL=$(FOBT_DB_URL)
+    -e HBA1CPOC_DB_USERNAME=$(HBA1CPOC_DB_USERNAME) 
+    -e HBA1CPOC_DB_PASSWORD=$(HBA1CPOC_DB_PASSWORD) 
+    -e HBA1CPOC_DB_URL=$(HBA1CPOC_DB_URL)
+    -e PAD_DB_USERNAME=$(PAD_DB_USERNAME) 
+    -e PAD_DB_PASSWORD=$(PAD_DB_PASSWORD) 
+    -e PAD_DB_URL=$(PAD_DB_URL)
+    -e SPIROMETRY_DB_USERNAME=$(SPIROMETRY_DB_USERNAME) 
+    -e SPIROMETRY_DB_PASSWORD=$(SPIROMETRY_DB_PASSWORD) 
+    -e SPIROMETRY_DB_URL=$(SPIROMETRY_DB_URL)
+    -e OMS_DB_USERNAME=$(OMS_DB_USERNAME)
+    -e OMS_DB_PASSWORD=$(OMS_DB_PASSWORD)
+    -e OMS_DB_URL=$(OMS_DB_URL)
+    -e SMB_PASSWORD=$(SMB_PASSWORD)
+    -e SMB_USERNAME=$(SMB_USERNAME)
+    -e ZEPHYR_API_TOKEN=$(ZEPHYR_API_TOKEN)
+    -e ZEPHYR_API_URL=$(ZEPHYR_API_URL)
+    -e CREATE_TEST_CYCLE=$(CREATE_TEST_CYCLE)
+    -e ZEPHYR_DESCRIPTION='$(Build.SourceVersionMessage)'
+    -e COMMIT_ID=$(Build.SourceVersion)
+    -e ANCILLARY_SERVICE=$(service)"
+  - name: dco_file_location
+    type: string
+    default: "tests/ancillary-services-karate-tests"
+  - name: karate_env
+    type: string
+    default: uat
+  
+jobs:
+- job: Integration_Tests
+  pool:
+    name: uat-linux-test
+  steps:
+  - checkout: self
+    clean: true
+
+  - task: Docker@2
+    displayName: Docker Login
+    inputs:
+      containerRegistry: signifyhealthdev
+      command: login
+
+  - task: Bash@3
+    displayName: Generate unique compose project name
+    inputs:
+      targetType: inline
+      script: |
+        containerName=$(git rev-parse --short=7 HEAD)-$(tag)
+        echo "##vso[task.setvariable variable=container_name]$containerName"
+
+  - task: Bash@3
+    displayName: Spin up Docker and run Karate tests
+    inputs:
+      targetType: inline
+      script: |
+        docker compose run ${{ parameters.dco_environment_variables }} \
+          --build \
+          --name $(container_name) \
+          ancillary-karate-tests \
+          mvn test -Dkarate.env="${{ parameters.karate_env }}" "-Dkarate.options=--tags @$(tag)"
+
+        echo "Reading zephyr.txt to extract TestCycleKey and TestCycleId."
+        keyId=`cat target/zephyr.txt`
+        arrKeyId=(${keyId//,/ })
+        tc_key=${arrKeyId[0]} 
+        tc_id=${arrKeyId[1]}
+        echo "TestCycleKey read from file : ${tc_key}"
+        echo "TestCycleId read from file : ${tc_id}" 
+        echo "##vso[task.setvariable variable=testCycleKey;isoutput=true]${tc_key}"
+        echo "##vso[task.setvariable variable=testCycleId;isoutput=true]${tc_id}"
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+    name: RunKarateTests
+
+  - task: Bash@3
+    displayName: Docker Logs
+    condition: succeededOrFailed()
+    inputs:
+      targetType: inline
+      script: docker compose -f docker-compose.yml logs
+      workingDirectory: $(System.DefaultWorkingDirectory)//${{ parameters.dco_file_location }}
+
+  - task: Bash@3
+    displayName: Down the containers after running tests
+    condition: always()
+    inputs:
+      targetType: inline
+      script: >-
+        docker compose -f docker-compose.yml down --remove-orphans
+      workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.dco_file_location }}
+
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/karate-reports/**.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+      testRunTitle: $(Build.DefinitionName) Results
+
+  - task: CopyFiles@2
+    displayName: Copy JUnit XML Files to Artifact Staging
+    condition: succeededOrFailed()
+    inputs:
+      SourceFolder: $(System.DefaultWorkingDirectory)
+      Contents: '**/karate-reports/**.xml'
+      TargetFolder: $(build.artifactstagingdirectory)
+      preserveTimestamp: true
+      
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Test Results Artifact
+    condition: succeededOrFailed()
+    inputs:
+      ArtifactName: $(Build.DefinitionName)-junit-reports
+  
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Karate Test Html Reports
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: $(System.DefaultWorkingDirectory)/tests/ancillary-services-karate-tests/target/karate-reports
+      artifact: KarateHTMLReport_$(System.JobId)
+      publishLocation: 'pipeline'

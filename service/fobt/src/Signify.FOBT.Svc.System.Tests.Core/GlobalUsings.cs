@@ -1,0 +1,1 @@
+﻿global using static Signify.FOBT.Svc.System.Tests.Core.Constants.TestConstants;

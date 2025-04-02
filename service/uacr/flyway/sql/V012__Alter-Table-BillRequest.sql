@@ -1,0 +1,1 @@
+GRANT SELECT, UPDATE, INSERT ON public."BillRequest" TO svcuacr;

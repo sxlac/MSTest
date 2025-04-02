@@ -1,0 +1,221 @@
+---
+# NOTE: PDBs are immutable prior to v1.15. Starting with a maxUnavailable of 1 is good practice, so a deployment with 3 replicas will always have at least 2 running.
+# Additional configuration can be found at https://kubernetes.io/docs/tasks/run-application/configure-pdb/#think-about-how-your-application-reacts-to-disruptions
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  maxUnavailable: #{PDB:MaxUnavailable}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}-config
+type: Opaque
+stringData:
+  db-connstr: #{DBConnectionString}
+  asb-connstr: #{AzureServiceBus}
+  akka-connstr: #{AkkaConnectionString}
+  ccloud-password: #{CCloudPassword}
+  client-secret: #{OktaClientSecret}
+  pdf-licensekey: #{IronPdfLicenseKey}  
+  irisresult-connstr: #{IrisResultDeliveryServiceBus}
+  iris-ordersubmission-connstr: "#{IrisOrderSubmissionServiceBus}"
+  iris-imageupload-connstr: "#{IrisImageUploadConnectionString}"
+  iris-orderevents-connstr: "#{IrisOrderEventsServiceBusConnectionString}"
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: kafka-key
+  namespace: #{DockerNamespace}
+spec:
+  type: kv-v2
+  mount: #{vssMount}
+  path: #{vssPath}
+  destination:
+    name: vss-kafka-secret
+    create: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+  labels:
+    app: #{DockerName}
+spec:
+  clusterIP: None
+  selector:
+    app: #{DockerName}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: #{DockerNamespace}
+  name: #{DockerName}
+spec:
+  replicas: #{Replicas} # Typically set to 1 for all environments
+  revisionHistoryLimit: 2
+  serviceName: #{DockerName}
+  selector:
+    matchLabels:
+      app: #{DockerName}
+  template:
+    metadata:
+      labels:
+        app: #{DockerName}
+        version: #{VersionWithSha}
+    spec:
+      containers:
+        - image: "signifyhealth.azurecr.io/#{ImageName}"
+          imagePullPolicy: Always
+          name: #{DockerName}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LivenessProbe__Uri
+              value: "http://*:5051/health/live/" # Note these paths must end in a '/'
+            - name: DOTNET_ENVIRONMENT
+              value: #{EnvironmentName}
+            - name: NEW_RELIC_APP_NAME
+              value: #{ProjectsName}-#{EnvironmentName}
+            - name: NEW_RELIC_LICENSE_KEY
+              value: #{NewRelicLicenseKey}
+            - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+              value: "true"
+            - name: Serilog__MinimumLevel__Default
+              value: #{SerilogMinimumLevel}
+            - name: Serilog__Properties__Environment
+              value: #{EnvironmentName}
+            - name: Serilog__Properties__App
+              value: #{ProjectsName}
+            - name: Serilog__Properties__Version
+              value: #{VersionWithSha}
+            - name: AkkaKafkaStream__KafkaBrokers
+              value: #{KafkaBrokers}
+            - name: AkkaKafkaStream__SecurityProtocol
+              value: sasl_ssl
+            - name: AkkaKafkaStream__Username
+              valueFrom:
+                secretKeyRef:
+                  key: key
+                  name: vss-kafka-secret
+            - name: LaunchDarkly__SharedLicenseKey
+              value: #{LaunchDarkly:SharedLicenseKey}
+            - name: LaunchDarkly__ProjectLicenseKey
+              value: #{LaunchDarkly:ProjectLicenseKey}
+            - name: AkkaKafkaStream__Password
+              valueFrom:
+                secretKeyRef:
+                  key: secret
+                  name: vss-kafka-secret
+            - name: AkkaKafkaStream__PersistenceConnection
+              valueFrom:
+                secretKeyRef:
+                  key: akka-connstr
+                  name: #{DockerName}-config
+            - name: KafkaPublisher__brokers
+              value: #{KafkaBrokers}
+            - name: KafkaPublisher__SecurityProtocol
+              value: sasl_ssl
+            - name: KafkaPublisher__Username
+              value: #{CCloudUsername}
+            - name: KafkaPublisher__Password
+              valueFrom:
+                secretKeyRef:
+                  key: ccloud-password
+                  name: #{DockerName}-config
+            - name: ConnectionStrings__DB
+              valueFrom:
+                secretKeyRef:
+                  key: db-connstr
+                  name: #{DockerName}-config
+            - name: ConnectionStrings__AzureServiceBus
+              valueFrom:
+                secretKeyRef:
+                  key: asb-connstr
+                  name: #{DockerName}-config
+            - name: Iris__SiteLocalId
+              value: "#{IrisSiteLocalId}"
+            - name: Iris__ClientGuid
+              value: "#{IrisClientGuid}"
+            - name: Iris__OrderSubmissionServiceBusConnectionString
+              valueFrom:
+                secretKeyRef:
+                  key: iris-ordersubmission-connstr
+                  name: "#{DockerName}-config"
+            - name: Iris__ImageUploadConnectionString
+              valueFrom:
+                secretKeyRef:
+                  key: iris-imageupload-connstr
+                  name: "#{DockerName}-config"
+            - name: Iris__OrderEventsServiceBusConnectionString
+              valueFrom:
+                secretKeyRef:
+                  key: iris-orderevents-connstr
+                  name : "#{DockerName}-config"
+            - name: ConnectionStrings__IrisResultDeliveryServiceBus
+              valueFrom:
+                secretKeyRef:
+                  key: irisresult-connstr
+                  name: #{DockerName}-config
+            - name: ApiUrls__ProviderPayApiUrl
+              value: #{ProviderPayUrl}
+            - name: Okta__Domain
+              value: "#{OktaApiUrl}"
+            - name: Okta__apiurl
+              value: "#{OktaApiUrl}"
+            - name: Okta__ClientId
+              value: #{OktaClientId}
+            - name: Okta__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  key: client-secret
+                  name: #{DockerName}-config
+            - name: IronPDF__Key
+              valueFrom:
+                secretKeyRef:
+                  key: pdf-licensekey
+                  name: #{DockerName}-config
+            - name: ApiUrls__CdiHoldsApiUrl
+              value: "#{CdiHoldsApiUrl}"
+          livenessProbe: # alternately startupProbe or readinessProbe
+            httpGet:
+              path: "/health/live/"
+              port: 5051
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 6
+          resources:
+            requests:
+              cpu: #{ResourceRequest:Cpu} # Set to 100m
+              memory: #{ResourceRequest:Memory} # Set to 250M
+            limits:
+              cpu: #{ResourceLimit:Cpu} # Set to 500m
+              memory: #{ResourceLimit:Memory} # Set to 500M
+          volumeMounts:
+            - name: particular
+              mountPath: /usr/share/ParticularSoftware
+              readOnly: true
+            - name: ca-pemstore
+              mountPath: /etc/ssl/certs/censeoca01-root.pem
+              subPath: censeoca01-root.pem
+              readOnly: true
+      volumes:
+        - name: particular
+          secret:
+            secretName: particular
+        - name: ca-pemstore
+          secret:
+            secretName: ca-pemstore
+
